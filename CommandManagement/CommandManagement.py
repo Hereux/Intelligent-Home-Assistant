@@ -73,7 +73,7 @@ class CommandManagement(threading.Thread):
             utter_message = self.addons(command)
 
         if utter_message:
-            logger.info("Senden:", utter_message)
+            logger.info(f"Senden: {utter_message}")
             conn.send(utter_message.encode())
 
     def addons(self, addon: str):

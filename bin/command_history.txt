@@ -1,1 +1,2 @@
 
+greet|[]|Guten Tag, wie kann ich dir helfen?§

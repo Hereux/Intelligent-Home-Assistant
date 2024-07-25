@@ -6,7 +6,7 @@ import re
 
 import pyttsx3
 import yaml
-from multiprocess import Process
+from multiprocess.context import Process
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -84,7 +84,7 @@ def initialize_audio_folders(settings: dict):
 
 
 class TextToSpeech:
-    def __init__(self, live_speaking=True, using_internet=True, output_device=None):
+    def __init__(self, live_speaking=False, using_internet=False, output_device=None):
         self.missing_data = None
         self.is_running = False
         self.is_speaking = False
@@ -128,10 +128,10 @@ class TextToSpeech:
             if self.should_listen_after_playing:
                 self.should_listen = True
                 self.should_listen_after_playing = False
+
         if blocking:
             __process__()
         else:
-            print("Not Blocking")
             proc = Process(target=__process__)
             proc.start()
 
@@ -156,7 +156,7 @@ class TextToSpeech:
         :return: Befehlsverzeichnis u. ob es existiert.
         """
 
-        command_dir = os.path.join(self.main_dir_path, command, str(command_index+1))
+        command_dir = os.path.join(self.main_dir_path, command, str(command_index + 1))
         exists = os.path.exists(command_dir)
         return command_dir, exists
 
@@ -171,6 +171,33 @@ class TextToSpeech:
         self.play_multiple_files([], audio_file, blocking=False)
         return None
 
+    def generate_audio_files(self, missing_data):
+        """
+        Generiert die fehlenden Audiodateien.
+        :param missing_data: Die fehlenden Daten.
+        :return: None
+        """
+        command, entities, variation = missing_data
+        command_dir, exists = self.get_command_path(command, variation)
+
+        if not self.using_internet or not utils.check_for_internet():
+            logger.error("Keine Internetverbindung vorhanden.")
+            return
+        if exists:
+            logger.exception("Audiodatei existiert bereits und sollte trotzdem generiert werden.")
+            return
+        if command not in self.command_data:
+            logger.exception("Audiodatei soll generiert werden, es existiert aber kein Antwort (unmöglich).")
+            return
+
+        command_variations = self.command_data[command]
+        response = command_variations[variation]
+        response = response.replace("§", "")
+
+        logger.info("Generiere Audiodatei.")
+
+        return None
+
     def identify_entity(self, entity, command_dir):
         """
         Identifiziert die Entität.
@@ -178,7 +205,7 @@ class TextToSpeech:
         :param entity: Die Entität.
         :return: None
         """
-        if entity.isdigit():
+        if int == type(entity) or entity.isdigit():
             return str(entity), self.number_path
         if entity in ["ein", "an", "aus"]:
             return str(entity), self.special_entities_path
@@ -199,24 +226,20 @@ class TextToSpeech:
 
         for entity in entities:
             entity, path = self.identify_entity(entity, command_dir)
-            entity_path = os.path.join(path, entity)
+            entity_path = os.path.join(path, entity, ".mp3")
             entity_paths.append(entity_path)
 
         def __process__():
             self.is_speaking = True
-            print(command_files_paths, entity_paths)
             for audio_path in alternate_lists(command_files_paths, entity_paths):
-
                 sound = AudioSegment.from_mp3(audio_path)
 
                 play(sound[:len(sound) - end_cut])
             self.is_speaking = False
 
         if blocking:
-            print("Blocking")
             __process__()
         else:
-            print("Not Blocking")
             proc = Process(target=__process__)
             proc.start()
 
@@ -241,15 +264,13 @@ class TextToSpeech:
 
         if response.__contains__("§"):
             self.should_listen_after_playing = True
-            response = response.replace("§", "")
 
         command_dir, exists = self.get_command_path(command, command_index)
         logger.debug(f"Command Dir: {command_dir} | Exists: {exists}")
         if not exists:
             logger.info("Audiodatei existiert nicht. Generiere Audiodatei.")
-            self.missing_data = [command, entities]
+            self.missing_data = [command, entities, command_index]
             self.is_missing_files = True
-
 
             # Falls die Audiodatei noch nicht existiert, wird das zuhören verschoben
             self.should_listen_after_generating = self.should_listen_after_playing

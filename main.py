@@ -1,6 +1,5 @@
 # Author: Hereux
 import json
-import time
 
 import colorlog
 import elevenlabs
@@ -124,7 +123,7 @@ class HomeAssistant:
         if self.audio_file_gen_process is None:
 
             missing_data = self.memory["missing_data"] = self.tts.missing_data
-            self.audio_file_gen_process = Process(target=self.tts.elevenlabs_generate_audio_files, args=(missing_data,))
+            self.audio_file_gen_process = Process(target=self.tts.generate_audio_files, args=(missing_data,))
             self.audio_file_gen_process.start()
 
         elif self.audio_file_gen_process.is_alive() is False:
@@ -185,7 +184,6 @@ class HomeAssistant:
 
         self.get_audio_stream()  # Starte Audio Stream
         while self.is_running:
-            last_run = time.time()
             try:
                 # Lese Audio Stream
                 pcm = self.audio_stream.read(self.porcupine.frame_length)
@@ -216,7 +214,6 @@ class HomeAssistant:
 
                 sentence = text2numde.sentence2num(sentence)
                 logger.info("Sprache zu Text umgewandelt; Text: " + sentence)
-                print(f"Time: {time.time() - last_run}")
 
                 # BEFEHLS-ERKENNUNG
                 if self.using_rasa:
@@ -224,15 +221,12 @@ class HomeAssistant:
                     print("RASA Response: " + response)
                 else:
                     command, entities, response = self.manual_ttc(sentence)
-                print(f"Time: {time.time() - last_run}")
 
                 # BEFEHLS-AUSFÜHRUNG
                 self.send_command_to_client(command, entities, response)
-                print(f"Time: {time.time() - last_run}")
 
                 # SPRACH-AUSGABE
                 self.text_to_speech(command, entities, response)
-                print(f"Time: {time.time() - last_run}")
 
             except KeyboardInterrupt or SystemExit:
                 logger.info("Home Assistant stopping...")
