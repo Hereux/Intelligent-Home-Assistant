@@ -22,8 +22,8 @@ class TuyaSmart:
 
     def __init__(self):
         super().__init__()
-        self.api = TuyaOpenAPI(endpoint="https://openapi-weaz.tuyaeu.com", access_id="seuksxy59gvvhdew3gwp",
-                               access_secret="4d5b99d0397945ea96c55c3106674290")
+        self.api = TuyaOpenAPI(endpoint="https://openapi-weaz.tuyaeu.com", access_id=ACCESS_ID,
+                               access_secret=ACCESS_KEY)
         self.device_index()
 
     def connect(self):

@@ -3,4 +3,6 @@ SpeechToText/Models
 Glados V2 Konversationsablauf.docx
 ~/*.bat
 backup/
-venv
+venv/
+bin/settings.json
+bin/settings backup.json
