@@ -16,12 +16,15 @@ from bin.utils import alternate_lists
 logger = logging.getLogger("AIVoiceAssistant_HX")
 
 domain = yaml.load(open("bin/rasa/domain.yml", "r", encoding="utf-8"), Loader=yaml.Loader)
-responses = domain["responses"]
+domain_raw_responses = domain["responses"]
 
 filtered_responses = {
     "utter_error": [
         "Es ist ein Fehler aufgetreten.", "Es ist ein Problem mit der Befehlsverarbeitung aufgetreten.",
         "Ich habe dich nicht verstanden."
+    ],
+    "missing_audio_files": [
+        "Die Audiodatei existiert nicht. Sie wird generiert."
     ]
 }
 
@@ -31,7 +34,7 @@ def initalize_command_data():
     Lädt die Befehlsdaten aus der Domain Datei in ein Dictionary
     :return: Ein Dictionary mit den Befehlsdaten
     """
-    for key, value in responses.items():
+    for key, value in domain_raw_responses.items():
         filtered_texts = []
         for ttext in value:
             ttext = ttext["text"]
@@ -166,9 +169,10 @@ class TextToSpeech:
         :return: None
         """
 
-        audio_files = self.command_data["missing_audio_files"]
+        audio_files = os.listdir(self.missing_audio_files_path)
         audio_file = random.choice(audio_files)
-        self.play_multiple_files([], audio_file, blocking=False)
+        audio_file_path = os.path.join(self.missing_audio_files_path, audio_file)
+        # self.play_multiple_files([], audio_file_path, blocking=False)
         return None
 
     def generate_audio_files(self, missing_data):
@@ -186,15 +190,32 @@ class TextToSpeech:
         if exists:
             logger.exception("Audiodatei existiert bereits und sollte trotzdem generiert werden.")
             return
-        if command not in self.command_data:
-            logger.exception("Audiodatei soll generiert werden, es existiert aber kein Antwort (unmöglich).")
-            return
 
+        print(domain_raw_responses)
         command_variations = self.command_data[command]
         response = command_variations[variation]
         response = response.replace("§", "")
 
-        logger.info("Generiere Audiodatei.")
+        domain_response = domain_raw_responses["utter_" + command]
+        domain_response = domain_response[variation]["text"]
+
+        logger.debug(f"Response: {response}")
+
+        runs = 0
+        texts = []
+        while "{" in domain_response:
+            # removes brackets, extracts entity name
+            split_1 = domain_response.split("{", 1)
+            split_2 = split_1[1].split("}", 1)
+
+            texts.append(split_1[0])
+
+            domain_response = split_1[0] + "%?" + split_2[1]
+            runs += 1
+        print(texts)
+        texts = domain_response.split("%?")
+
+        #elevenlabs.generate(texts)
 
         return None
 

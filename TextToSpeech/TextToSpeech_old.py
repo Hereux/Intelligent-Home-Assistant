@@ -180,34 +180,32 @@ class TextToSpeech:
         self.engine.say(text)
         self.engine.runAndWait()
 
-    def elevenlabs_generate_audio_files(self, data):
+    def elevenlabs_generate_audio_files(self, command_path, texts: list, orig_text: str):
         """
         Wird ausgeführt um Audiodateien von ElevenLabs zu generieren.
         :return: None
         """
-        command, entities, response_text, command_path = data
 
         if not self.using_internet or not utils.check_for_internet():
             self.elevenlabs_module(
                 response_text="Kritischer Systemfehler. Das Internet ist deaktiviert oder nicht erreichbar.")
-            logger.debug("Internet ist deaktiviert oder nicht erreichbar.")
-            return False
-
+            return
+        print("ok", "Texts: ", texts)
         for count in range(len(texts)):
             text = texts[count]
 
-            if text.__contains__("§"): text = text.replace("§", "")
-            logger.info("Generiere: " + texts[count])
+            if text.__contains__("§"):
+                text = text.replace("§", "")
+
+            print("Generiere: " + texts[count])
 
             path = os.path.join(command_path, str(count + 1) + ".mp3")
 
             voice = elevenlabs.generate(voice=self.settings["elevenlabs_voice_id"], text=text,
                                         model="eleven_multilingual_v2")
             elevenlabs.save(voice, path)
-
-            # Spielt die neu generierte Audiodatei ab
-            print("Playing: ", path)
-            self.elevenlabs_module(response_text=response_text)
+            print("Datei wurde gespeichert.")
+            self.elevenlabs_module(response_text=orig_text)
 
     def __elevenlabs_speak_thread__(self, audio_files, end_cut=100):
         """

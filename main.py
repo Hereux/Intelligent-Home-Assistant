@@ -119,7 +119,6 @@ class HomeAssistant:
         )
 
     def when_missing_audio_files(self):
-        print("Missing audio files")
         if self.audio_file_gen_process is None:
 
             missing_data = self.memory["missing_data"] = self.tts.missing_data
