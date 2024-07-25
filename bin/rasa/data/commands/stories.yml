@@ -1,0 +1,66 @@
+version: "3.1"
+
+stories:
+  - story: User says hello and he feels good
+    steps:
+      - intent: hello_there
+      - action: utter_hello_there
+      - intent: im_fine
+      - action: utter_what_can_i_do
+
+  - story: User says hello and he feels bad
+    steps:
+      - intent: hello_there
+      - action: utter_hello_there
+      - intent: im_not_fine
+      - action: utter_what_can_i_do_unfriendly
+
+  - story: User says hello, (feelings ignored) and asks GladOS how shes doing
+    steps:
+      - intent: hello_there
+      - action: utter_hello_there
+      - intent: how_about_you
+      - action: utter_hows_it_going
+
+  - story: User wants to deactivate definetly
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+      - intent: confirmation_yes
+      - action: utter_deactivate
+      - action: action_stop
+
+  - story: User wants to deactivate but changes his mind
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+      - intent: confirmation_no
+      - action: utter_not_deactivate
+
+  - story: Set the volume
+    steps:
+      - intent: volume_set
+        entities:
+          - percent_entity
+      - slot_was_set:
+          - percent_slot:
+              - type: from_entity
+                entity: percent_entity
+      - action: action_volume_set
+      - action: utter_volume_set
+
+  - story: Activate / deactivate displays
+    steps:
+      - intent: display_on_off
+        entities:
+          - display_entity
+          - on_off_entity
+      - slot_was_set:
+          - display_num_slot:
+              - type: from_entity
+                entity: display_num_entity
+          - display_on_off_slot:
+              - type: from_entity
+                entity: display_on_off_entity
+      - action: action_display_on_off
+      - action: utter_display_on_off

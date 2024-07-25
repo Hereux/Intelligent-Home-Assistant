@@ -1,0 +1,53 @@
+version: "3.1"
+nlu:
+- intent: confirmation_no
+  examples: |
+    - Niemals
+- intent: display_on_off
+  examples: |
+    - Schalte [alle](display_num_entity) Monitore [aus](display_on_off_entity)
+- intent: confirmation_yes
+  examples: |
+    - Ja bitte
+    - Ja
+- intent: volume_down
+  examples: |
+    - leiser
+- intent: volume_get
+  examples: |
+    - Wie laut ist die Musik?
+- intent: hello_there
+  examples: |
+    - Hallo
+- intent: volume_up
+  examples: |
+    - mach die musik lauter
+    - mach den ton lauter
+- intent: im_fine
+  examples: |
+    - Mir geht es gut
+    - Passt schon
+- intent: im_not_fine
+  examples: |
+    - beschissen
+    - Nicht prima
+- intent: volume_mute
+  examples: |
+    - ton stumm schalten
+- intent: volume_set
+  examples: |
+    - musik auf [45](percent_entity) Prozent lautstärke
+    - mach den ton auf [80](percent_entity) Prozent
+- intent: how_about_you
+  examples: |
+    - Mir geht es gut und dir?
+    - Alles gut und dir?
+- intent: bot_challenge
+  examples: |
+    - Bist du ein Mensch oder ein Roboter
+    - Bist du eine KI
+- intent: goodbye
+  examples: |
+    - gute Nacht
+    - deaktivieren
+    - beenden

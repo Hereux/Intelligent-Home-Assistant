@@ -1,0 +1,97 @@
+version: "3.1"
+
+rules:
+
+  - rule: Say hello anytime the user says hello
+    steps:
+    - intent: greet
+    - action: utter_greet
+
+
+  - rule : hello world
+    steps:
+    - intent: hello_world
+    - action: action_hello_world
+
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+    - intent: goodbye
+    - action: action_stop
+    - action: utter_goodbye
+
+  - rule: Turn up the volume
+    steps:
+    - intent: volume_up
+    - action: action_volume_up
+    - action: utter_volume_up
+
+  - rule: Turn down the volume
+    steps:
+      - intent: volume_down
+      - action: action_volume_down
+      - action: utter_volume_down
+
+  - rule: Mute the volume
+    steps:
+      - intent: volume_mute
+      - action: action_volume_mute
+      - action: utter_volume_mute
+
+
+  - rule: Set the volume
+    steps:
+      - intent: volume_set
+        entities:
+        - volume_entity
+      - slot_was_set:
+        - volume_slot:
+            - type: from_entity
+              entity: volume_entity
+      - action: action_volume_set
+      - action: utter_volume_set
+
+  - rule: Get the volume
+    steps:
+      - intent: volume_get
+      - action: action_volume_get
+      - action: utter_volume_get
+
+  - rule: Turn the displays on or off
+    steps:
+      - intent: display_on_off
+        entities:
+        - display
+        - display_on_off
+      - slot_was_set:
+        - display: display
+        - display_on_off: display_on_off
+      - action: action_display_on_off
+      - action: utter_display_on_off
+
+  - rule: Change the brightness of all displays
+    steps:
+      - intent: display_brightness_all
+        entities:
+          - display_brightness
+      - slot_was_set:
+          - display_brightness: display_brightness
+      - action: action_display_brightness
+      - action: utter_display_brightness_all
+
+
+  - rule: Change the brightness of a specific display
+    steps:
+      - intent: display_brightness
+        entities:
+          - display
+          - display_brightness
+      - slot_was_set:
+          - display: display
+          - display_brightness: display_brightness
+      - action: action_display_brightness
+      - action: utter_display_brightness
+
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+    - intent: bot_challenge
+    - action: utter_iamabot

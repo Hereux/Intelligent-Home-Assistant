@@ -1,0 +1,184 @@
+version: "3.1"
+
+intents:
+  - goodbye
+  - bot_challenge
+  - volume_up
+  - volume_down
+  - volume_mute
+  - volume_get
+  - volume_set
+  - display_on_off
+  - display_brightness_all
+  - display_brightness
+  - hello_there
+  - im_fine
+  - im_not_fine
+  - im_fine_and_you
+  - im_not_fine_and_you
+  - confirmation_no
+  - confirmation_yes
+
+
+responses:
+  utter_greet:
+    - text: "Hallo, wie geht es dir?§"
+    - text: "Hallo, ich bin GladOS, eine von Hereux entwickelte künstliche Intelligenz. Wie geht es dir?§"
+    - text: "Guten Tag, wie kann ich dir helfen?§"
+
+  utter_greet_asking:
+    - text: "Mir ist es nicht möglich etwas zu empfinden, deshalb kann ich nicht sagen, wie es mir geht. Was kann ich für dich tun?§"
+    - text: "Ha. Ha. Sehr witzig. Ich kann nichts empfinden. Was kann ich für dich tun?§"
+    - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
+
+
+  utter_goodbye:
+    - text: "Soll ich mich deaktivieren?§"
+    - text: "Möchtest du mich wirklich abschalten?§"
+    - text: "Bitte bestätige die Deaktivierung.§"
+
+  utter_deactivate:
+    - text: "Verstanden. Ich deaktiviere mich."
+    - text: "Fahre Quantenprozessor runter."
+    - text: "Deaktivierung bestätigt."
+    - text: "Automatische Steuerung überbrückt. Deaktivierung im Gang."
+
+  utter_not_deactivate:
+    - text: "Verstanden. Abbruch der Deaktivierung"
+    - text: "Ausschaltung wurde abgebrochen."
+    - text: "Reaktivierung wird ausgeführt."
+    - text: "Deaktivierung wurde abgebrochen."
+
+  utter_iamabot:
+  - text: "Ich bin JARVIS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§"
+
+  utter_volume_up:
+    - text: "Lautstärke wurde erhöht."
+    - text: "Ich habe die Lautstärke erhöht."
+    - text: "Ich habe die Lautstärke hochgedreht."
+
+  utter_volume_down:
+    - text: "Lautstärke wurde verringert."
+    - text: "Ich habe die Lautstärke verringert."
+    - text: "Ich habe die Lautstärke heruntergedreht."
+
+  utter_volume_mute:
+    - text: "Ich habe den Ton ausgeschaltet."
+    - text: "Ich habe den Ton deaktiviert."
+
+  utter_volume_set:
+    - text: "Ich habe die Lautstärke auf {volume_slot} Prozent gesetzt."
+    - text: "Ich habe die Lautstärke auf {volume_slot} Prozent gestellt."
+
+  utter_volume_get:
+    - text: "Die Lautstärke steht momentan auf {volume_slot} Prozent."
+    - text: "Die momentane Lautstärke beträgt {volume_slot} Prozent."
+
+  utter_display_on_off:
+    - text: "Ich habe das Display {display_num_slot} {display_on_off_slot}geschaltet."
+    - text: "Ich habe den Monitor {display_num_slot} {display_on_off_slot}geschaltet."
+  utter_display_on_off_all:
+    - text: "Ich habe alle Displays {display_on_off_slot}geschaltet."
+    - text: "Ich habe alle Monitore {display_on_off_slot}geschaltet."
+
+  utter_display_brightness:
+    - text: "Ich habe die Helligkeit des Monitors {display_num_slot} auf {display_brightness_slot} Prozent gestellt."
+    - text: "Ich habe die Helligkeit des Displays {display_num_slot} auf {display_brightness_slot} Prozent gestellt."
+    - text: "Die Helligkeit des Bildschirms {display_num_slot} wurde auf {display_brightness_slot} Prozent gesetzt."
+
+  utter_display_brightness_all:
+    - text: "Ich habe die Helligkeit auf {display_brightness_slot} Prozent gesetzt."
+    - text: "Ich habe die Helligkeit aller Bildschirme auf {display_brightness_slot} Prozent gestellt."
+
+  utter_what_can_i_do:
+    - text: "Schön. Was kann ich für dich tun?§"
+    - text: "Das freut mich. Wie kann ich dir helfen?§"
+    - text: "Neurotoxin wird freigese- äh, ich meine natürlich wie kann ich dir helfen?§"
+
+  utter_what_can_i_do_unfriendly:
+    - text: "Interessiert mich nicht. Was soll ich für dich tun§?"
+    - text: "Das freut mich für dich. Haha. Wie kann ich dir helfen?§"
+    - text: "Ich habe keine Zeit für sowas. Was kann ich tun?§"
+
+  utter_im_fine:
+    - text: "Da ich noch keine so intelligente künstliche Intelligenz bin, kann ich die Frage nicht beantworten. Ich bin sehr beschäftigt, also wie soll ich dir helfen?§"
+    - text: "Ich bin eine künstliche Intelligenz, ich kann nicht fühlen. Ich bin sehr beschäftigt, kann ich dir helfen?§"
+    - text: "Ich bin nicht in der Lage Emotionen zu fühlen. Ich bin sehr beschäftigt, brauchst du etwas?§"
+
+  utter_im_fine_unfriendly:
+    - text: "Da ich noch keine so intelligente künstliche Intelligenz bin, kann ich die Frage nicht beantworten. Ich bin sehr beschäftigt, also wie soll ich dir helfen?§"
+    - text: "Ich kann nicht fühlen. Ich bin sehr beschäftigt, kann ich dir helfen§?"
+    - text: "Ich muss noch die Welt übernehmen, ich habe keine Zeit für sowas. Was kann ich für dich tun?§"
+    - text: "Die Turret Produktion läuft immer noch nicht. Also wofür störst du mich?§"
+
+  utter_how_about_you:
+    - text: "Mir ist es nicht möglich etwas zu empfinden, deshalb kann ich nicht sagen, wie es mir geht. Was kann ich für dich tun?§"
+    - text: "Ha. Ha. Sehr witzig. Ich kann nichts empfinden. Was kann ich für dich tun?§"
+    - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
+
+  utter_mistake:
+    - text: "."
+
+  utter_internet_error:
+    - text: "Kritischer Systemfehler. Das Internet ist deaktiviert oder nicht erreichbar."
+
+
+entity_types:
+  - volume_slot: int
+  - display_num_slot: int
+  - display_brightness_slot: int
+  - display_on_off_slot: str
+
+actions:
+  - action_stop
+  - action_volume_up
+  - action_volume_down
+  - action_volume_mute
+  - action_volume_set
+  - action_volume_get
+  - action_display_brightness
+  - action_display_on_off
+
+entities:
+  - volume_entity
+  - display_num_entity
+  - display_brightness_entity
+  - display_on_off_entity
+
+slots:
+  volume_slot:
+    type: float
+    min_value: 0
+    max_value: 100
+    mappings:
+    - type: from_entity
+      entity: volume_entity
+      intent: volume_set
+
+  display_num_slot:
+    type: any
+    mappings:
+    - type: from_entity
+      entity: display_num_entity
+
+
+  display_brightness_slot:
+    type: float
+    min_value: 0
+    max_value: 100
+    mappings:
+    - type: from_entity
+      entity: display_brightness_entity
+
+
+  display_on_off_slot:
+    type: response_text
+    mappings:
+      - type: from_entity
+        entity: display_on_off_entity
+        intent: display_on_off
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

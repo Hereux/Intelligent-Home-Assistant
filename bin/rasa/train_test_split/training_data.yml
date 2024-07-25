@@ -1,0 +1,121 @@
+version: "3.1"
+nlu:
+- intent: confirmation_no
+  examples: |
+    - Nein danke
+    - Nein das möchte ich nicht
+    - Abbruch
+    - Stopp
+- intent: display_on_off
+  examples: |
+    - Schalte [alle](display_num_entity) Bildschirme [an](display_on_off_entity)
+    - [alle](display_num_entity) Bildschirme [aus](display_on_off_entity) schalten
+    - Schalte den [1](display_num_entity) Monitor [an](display_on_off_entity)
+    - [1](display_num_entity) Bildschirm [an](display_on_off_entity) schalten
+- intent: confirmation_yes
+  examples: |
+    - Naturlich
+    - Bite doch
+    - Herunterfahren
+    - Bestätigen
+- intent: volume_down
+  examples: |
+    - mach den ton leiser
+    - Lautstärke absenken
+    - musik leiser machen
+    - Lautstärke leiser machen
+    - ton leiser machen
+- intent: volume_get
+  examples: |
+    - Wie laut ist der Ton?
+    - Wie laut ist die Lautstärke?
+    - Auf wie viel Prozent ist die Lautstärke?
+    - wie lautes die musik
+    - Wie laut ist es?
+- intent: hello_there
+  examples: |
+    - Guten Abend
+    - Moin
+    - Servus
+    - Guten Tag
+    - Hi
+    - Hey
+- intent: volume_up
+  examples: |
+    - Lautstärke erhöht
+    - ton erhöhen
+    - ton lauter
+    - lauter
+    - Lautstärke erhöhen
+    - musik lauter machen
+- intent: im_fine
+  examples: |
+    - Gut
+    - Super
+    - Alles gut bei dir
+    - Sehr gut
+    - Alles in Ordnung
+    - Alles okay
+    - Prima
+- intent: im_not_fine
+  examples: |
+    - Nicht so gut
+    - Nicht gut
+    - Schlecht
+    - Nicht super
+    - krank
+    - Mir geht es nicht gut
+    - scheiße
+- intent: volume_mute
+  examples: |
+    - mach die musik aus
+    - Lautstärke ausschalten
+    - ton ausschalten
+    - musik stumm schalten
+    - ton stummschalten
+    - Lautstärke deaktivieren
+    - mach den ton ein
+    - Lautstärke stumm schalten
+- intent: volume_set
+  examples: |
+    - lautstärke auf [12](percent_entity) Prozent stellen
+    - mach die musik auf [35](percent_entity) Prozent
+    - Stelle die Lautstärke auf [1](percent_entity) Prozent
+    - ton auf [29](percent_entity) Prozent stellen
+    - Stelle die Lautstärke auf [100](percent_entity) Prozent
+    - Setze die Lautstärke auf [50](percent_entity) Prozent
+    - Auf [100](percent_entity) Prozent Lautstärke stellen
+- intent: how_about_you
+  examples: |
+    - Sehr gut und dir?
+    - Wie geht es dir?
+    - Mir geht es nicht gut und dir?
+    - Sehr schlecht und dir?
+    - Alles scheiße und wie gehts dir?
+    - Schlecht. und dir?
+    - Wie geht es dir so?
+    - Gut und dir?
+- intent: bot_challenge
+  examples: |
+    - Woher kommst du
+    - Bist du ein Mensch?
+    - Was ist das
+    - Bist du eine Künstliche Intelligenz
+    - Bot
+    - Was willst du
+    - Wer bist du
+    - Bist du ein Mensch oder eine KI
+    - Wer bist du eigentlich
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - schlafenszeit
+    - ausschalten
+    - Selbstzerstörung
+    - Tschüss
+    - Deaktivieren
+    - bis dann
+    - abschalten
+    - bis bald
+    - bis später

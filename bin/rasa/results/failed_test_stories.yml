@@ -1,0 +1,48 @@
+version: "3.1"
+stories:
+- story: Activate / deactivate displays (.\tests\test_stories.yml)
+  steps:
+  - intent: display_on_off  # predicted: display_on_off: [Alle]{"entity": "display_num_entity", "value": "alle"} Monitore ausschalten
+  - slot_was_set:
+    - display_num_slot:
+      - type: from_entity
+        entity: display_num_entity
+  - slot_was_set:
+    - display_on_off_slot:
+      - type: from_entity
+        entity: display_on_off_entity
+  - action: action_volume_set  # predicted: action_display_on_off
+  - action: utter_volume_set
+- story: Set the volume (.\tests\test_stories.yml)
+  steps:
+  - user: |-
+      Lautstärke auf 76
+      intent: volume_set
+  - slot_was_set:
+    - percent_slot:
+      - type: from_entity
+        entity: percent_entity
+  - action: action_volume_set  # predicted: action_default_fallback
+  - action: utter_volume_set
+- story: Set the volume (.\tests\test_stories.yml)
+  steps:
+  - intent: volume_set  # predicted: volume_set: Stelle die Musik Lautstärke auf [23](percent_entity) Prozent
+  - slot_was_set:
+    - percent_slot:
+      - type: from_entity
+        entity: percent_entity
+  - action: action_volume_set  # predicted: action_default_fallback
+  - action: utter_volume_set
+- story: Activate / deactivate displays (.\tests\test_stories.yml)
+  steps:
+  - intent: display_on_off  # predicted: display_on_off: Schalte Display [1](percent_entity) [an](display_on_off_entity)
+  - slot_was_set:
+    - display_num_slot:
+      - type: from_entity
+        entity: display_num_entity
+  - slot_was_set:
+    - display_on_off_slot:
+      - type: from_entity
+        entity: display_on_off_entity
+  - action: action_volume_set  # predicted: action_display_on_off
+  - action: utter_volume_set

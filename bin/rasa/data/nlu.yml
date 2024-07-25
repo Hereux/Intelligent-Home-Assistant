@@ -1,0 +1,208 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - Hallo
+    - Guten Tag
+    - Guten Abend
+    - Hey
+    - Hi
+    - Moin
+    - Servus
+    - Was geht
+
+- intent: greet_asking
+  examples: |
+    - Hallo wie geht es dir?
+    - Hallo wie gehts?
+    - Hallo wie geht es dir so?
+
+
+- intent: im_fine
+  examples: |
+    - Mir geht es gut
+    - Gut
+    - Sehr gut
+    - Super
+    - Prima
+    - Alles in Ordnung
+    - Alles okay
+    - Alles gut bei dir
+    - Passt schon
+
+- intent: im_not_fine
+  examples: |
+    - Mir geht es nicht gut
+    - Nicht so gut
+    - Schlecht
+    - Nicht gut
+    - Nicht super
+    - Nicht prima
+    - scheiße
+    - krank
+    - beschissen
+
+- intent: how_about_you
+  examples: |      
+    - Mir geht es gut und dir?
+    - Alles gut und dir?
+    - Gut und dir?
+    - Sehr gut und dir?
+    - Wie geht es dir?
+    - Mir geht es nicht gut und dir?
+    - Alles scheiße und wie gehts dir?
+    - Schlecht. und dir?
+    - Sehr schlecht und dir?
+    - Wie geht es dir so?
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - bis bald
+    - bis später
+    - bis dann
+    - gute Nacht
+    - schlafenszeit
+    - Selbstzerstörung
+    - ausschalten
+    - deaktivieren
+    - beenden
+    - abschalten
+    - Tschüss
+    - Deaktivieren
+
+- intent: confirmation_yes
+  examples: |
+    - Ja 
+    - Ja bitte
+    - Bestätigen
+    - Bite doch
+    - Herunterfahren
+    - Naturlich
+
+- intent: confirmation_no
+  examples: |
+    - Nein das möchte ich nicht
+    - Nein danke
+    - Niemals
+    - Stopp
+    - Abbruch
+
+- intent: volume_up
+  examples: |
+    - Lautstärke erhöhen
+    - Lautstärke erhöht
+    - lauter 
+    - musik lauter machen
+    - ton lauter
+    - ton erhöhen
+    - mach die musik lauter
+    - mach den ton lauter
+
+- intent: volume_down
+  examples: |
+    - Lautstärke leiser machen
+    - Lautstärke absenken
+    - leiser
+    - musik leiser machen
+    - ton leiser machen
+    - mach den ton leiser
+
+- intent: volume_mute
+  examples: |
+    - Lautstärke ausschalten
+    - Lautstärke deaktivieren
+    - Lautstärke stumm schalten
+    - musik stumm schalten
+    - ton stumm schalten
+    - ton ausschalten 
+    - ton stummschalten
+    - mach die musik aus
+    - mach den ton ein
+
+- intent: volume_get
+  examples: |
+    - Wie laut ist die Musik?
+    - Wie laut ist der Ton?
+    - Wie laut ist die Lautstärke?
+    - Wie laut ist es?
+    - wie laut ist die musik?
+    - Auf wie viel Prozent ist die Lautstärke?
+
+- intent: volume_set
+  examples: |
+    - Stelle die Lautstärke auf [1](percent_entity) Prozent
+    - Setze die Lautstärke auf [50](percent_entity) Prozent
+    - Auf [100](percent_entity) Prozent Lautstärke stellen
+    - mach den ton auf [80](percent_entity) Prozent
+    - mach die musik auf [35](percent_entity) Prozent
+    - Stelle die Lautstärke auf [1](percent_entity) Prozent
+    - Stelle die Lautstärke auf [100](percent_entity) Prozent
+    - lautstärke auf [12](percent_entity) Prozent stellen
+    - musik auf [45](percent_entity) Prozent lautstärke
+    - ton auf [29](percent_entity) Prozent stellen
+
+
+- intent: display_on_off
+  examples: |
+    - Schalte den [1](display_num_entity) Monitor [an](display_on_off_entity)
+    - Schalte [alle](display_num_entity) Monitore [aus](display_on_off_entity)
+    - Schalte [alle](display_num_entity) Bildschirme [an](display_on_off_entity)
+    - [alle](display_num_entity) Bildschirme [aus](display_on_off_entity) schalten
+    - [1](display_num_entity) Bildschirm [an](display_on_off_entity) schalten
+
+
+- intent: display_brightness
+  examples: |
+    - mach den Monitor [1](display) [dunkler](display_brightness)
+    - Monitor [2](display) [heller](display_brightness)
+    - mach den Bildschirm [3](display) auf [80](display_brightness) Prozent
+    - stelle den Bildschirm [alle](display) auf [35](display_brightness) Prozent Helligkeit
+    - stelle den Bildschirm [1](display) auf [50](display_brightness) Prozent Helligkeit
+    - stelle das Display [2](display) auf [50](display_brightness) Prozent
+    - mach den Monitor [3](display) [heller](display_brightness)
+    - stelle die Helligkeit von Display [1](display) auf [100](display_brightness) Prozent
+    - stelle die Helligkeit des Monitors [2](display) auf [100](display_brightness) Prozent
+    - stelle die bildschirmhelligkeit von bildschirm [alle](display) auf [42](display_brightness) prozent
+    - stelle die bildschirmhelligkeit von bildschirm [3](display) auf [100](display_brightness) prozent
+
+
+- intent: display_brightness_all
+  examples: |
+    - mach den Bildschirm [heller](display_brightness)
+    - mach den Monitor [dunkler](display_brightness)
+    - mach den Monitor auf [80](display_brightness) Prozent Helligkeit
+    - Helligkeit auf [100](display_brightness) Prozent stellen
+    - Mach die Monitore [dunkler](display_brightness)
+    - Stelle die Helligkeit auf [1](display_brightness) Prozent
+    - Stelle die Helligkeit auf [100](display_brightness) Prozent
+    - Stelle die Bildschirmhelligkeit auf [100](display_brightness) Prozent
+    - Mach Displays auf [10](display_brightness)
+
+- intent: bot_challenge
+  examples: |
+    - Wer bist du
+    - Wer bist du eigentlich
+    - Woher kommst du
+    - Was willst du
+    - Was ist das
+    - Bot
+    - Bist du ein Mensch?
+    - Bist du ein Mensch oder ein Roboter
+    - Bist du eine KI
+    - Bist du eine Künstliche Intelligenz
+    - Bist du ein Mensch oder eine KI
+
+- intent: mistake
+  examples: |
+        - ich du
+        - Nahe nicht du
+        - Nein Nicht du 
+        - Nichts
+        - Nicht du
+        - Nichts tun
+        - Nicht du Glados
+        - Du warst nicht gemeint
+        - Du bist nicht gemeint

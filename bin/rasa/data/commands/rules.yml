@@ -1,0 +1,36 @@
+version: "3.1"
+
+rules:
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+      - intent: bot_challenge
+      - action: utter_iamabot
+
+  - rule: Turn up the volume
+    steps:
+      - intent: volume_up
+      - action: action_volume_up
+      - action: utter_volume_up
+
+  - rule: Turn down the volume
+    steps:
+      - intent: volume_down
+      - action: action_volume_down
+      - action: utter_volume_down
+
+  - rule: Mute the volume
+    steps:
+      - intent: volume_mute
+      - action: action_volume_mute
+      - action: utter_volume_mute
+
+  - rule: Get the volume
+    steps:
+      - intent: volume_get
+      - action: action_volume_get
+      - action: utter_volume_get
+
+  - rule: Default Fallback
+    steps:
+      - intent: nlu_fallback
+      - action: utter_fallback

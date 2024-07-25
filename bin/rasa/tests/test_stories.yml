@@ -1,0 +1,125 @@
+stories:
+- story: User says hello and he feels good
+  steps:
+    - user: |
+        Moin
+      intent: hello_there
+    - action: utter_hello_there
+    - user: |
+          Mir geht es gut
+      intent: im_fine
+    - action: utter_what_can_i_do
+
+- story: User says hello feels good and asks glados
+  steps:
+    - user: |
+        Moin
+      intent: hello_there
+    - action: utter_hello_there
+    - user: |
+          Mir geht es gut
+      intent: im_fine
+    - action: utter_what_can_i_do
+
+- story: User says hello and he feels bad
+  steps:
+    - user: |
+        Guten Abend
+      intent: hello_there
+    - action: utter_hello_there
+    - user: |
+          Mir geht es nicht gut
+      intent: im_not_fine
+    - action: utter_what_can_i_do_unfriendly
+
+- story: User wants not to deactivate but changes his mind
+  steps:
+    - user: |
+        Abschalten
+      intent: goodbye
+    - action: utter_goodbye
+    - user: |
+          Ja
+      intent: confirmation_yes
+    - action: utter_deactivate
+    - action: action_stop
+
+- story: User wants to deactivate but changes his mind
+  steps:
+    - user: |
+        Deaktivieren
+      intent: goodbye
+    - action: utter_goodbye
+    - user: |
+          Nein
+      intent: confirmation_no
+    - action: utter_not_deactivate
+
+
+- story: User says hello, (feelings ignored) and asks GladOS how shes doing
+  steps:
+    - user: |
+        Guten morgen
+      intent: hello_there
+    - action: utter_hello_there
+    - user: |
+          Mir gehts scheiße und dir?
+      intent: how_about_you
+    - action: utter_hows_it_going
+
+
+- story: Set the volume
+  steps:
+    - user: |
+        Lautstärke auf 76
+        intent: volume_set
+    - slot_was_set:
+        - percent_slot:
+            - type: from_entity
+              entity: percent_entity
+    - action: action_volume_set
+    - action: utter_volume_set
+
+
+- story: Set the volume
+  steps:
+    - user: |
+        Stelle die Musik Lautstärke auf 23 Prozent
+      intent: volume_set
+    - slot_was_set:
+        - percent_slot:
+           - type: from_entity
+             entity: percent_entity
+    - action: action_volume_set
+    - action: utter_volume_set
+
+
+- story: Activate / deactivate displays
+  steps:
+    - user: |
+        Schalte Display 1 an
+      intent: display_on_off
+    - slot_was_set:
+        - display_num_slot:
+           - type: from_entity
+             entity: display_num_entity
+        - display_on_off_slot:
+              - type: from_entity
+                entity: display_on_off_entity
+    - action: action_volume_set
+    - action: utter_volume_set
+
+- story: Activate / deactivate displays
+  steps:
+    - user: |
+          Alle Monitore ausschalten
+      intent: display_on_off
+    - slot_was_set:
+        - display_num_slot:
+           - type: from_entity
+             entity: display_num_entity
+        - display_on_off_slot:
+              - type: from_entity
+                entity: display_on_off_entity
+    - action: action_volume_set
+    - action: utter_volume_set

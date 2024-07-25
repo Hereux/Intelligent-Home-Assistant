@@ -1,0 +1,32 @@
+version: "3.1"
+
+stories:
+
+  - story: Say hello and ask how its going  feeling good  and you
+    steps:
+      - intent: hello_there
+      - action: utter_hello_there
+      - intent: im_fine_and_you
+      - action: utter_im_fine
+
+  - story: Say hello and ask how its going  feeling bad  and you
+    steps:
+      - intent: hello_there
+      - action: utter_hello_there
+      - intent: im_not_fine_and_you
+      - action: utter_im_fine_unfriendly
+
+  - story: Say goodbye anytime the user says goodbye
+    steps:
+    - intent: goodbye
+    - action: utter_goodbye
+    - intent: confirmation_yes
+    - action: utter_deactivate
+    - action: action_stop
+
+  - story: Say goodbye anytime the user says goodbye
+    steps:
+    - intent: goodbye
+    - action: utter_goodbye
+    - intent: confirmation_no
+    - action: utter_not_deactivate

@@ -1,0 +1,61 @@
+
+
+
+
+
+  - rule: Turn the displays on or off
+    steps:
+      - intent: display_on_off
+        entities:
+        - display_num_entity
+        - display_on_off_entity
+      - slot_was_set:
+        - display_num_slot: display_num_slot
+        - display_on_off_slot: display_on_off_slot
+      - action: action_display_on_off
+      - action: utter_display_on_off
+
+
+
+
+
+- intent: display_on_off
+  examples: |
+    - Schalte das Display [1](display_num_entity) [aus](display_on_off_entity)
+    - Schalte das Display [2](display_num_entity) [1](display_on_off_entity)
+    - Schalte den Monitor [3](display_num_entity) [an](display_on_off_entity)
+    - Schalte [alle](display_num_entity) [ein](display_on_off_entity)
+    - [alle](display_num_entity) monitore [aus](display_on_off_entity) schalten
+    - Schalte den Monitor [2](display_num_entity) [an](display_on_off_entity)
+    - Schalte [alle](display_num_entity) Displays [aus](display_on_off_entity)
+    - Schalte [alle](display_num_entity) Monitore [1](display_on_off_entity)
+
+
+
+pipeline:
+# # No configuration for the NLU pipeline was provided. The following default pipeline was used to train your model.
+# # If you'd like to customize it, uncomment and adjust the pipeline.
+# # See https://rasa.com/docs/rasa/tuning-your-model for more information.
+   - name: WhitespaceTokenizer
+   - name: RegexFeaturizer
+   - name: LexicalSyntacticFeaturizer
+   - name: CountVectorsFeaturizer
+   - name: CountVectorsFeaturizer
+     analyzer: "char_wb"
+     min_ngram: 1
+     max_ngram: 4
+   - name: DIETClassifier
+     epochs: 100
+   - name: EntitySynonymMapper
+   - name: ResponseSelector
+     epochs: 100
+     constrain_similarities: true
+   - name: EntitySynonymMapper
+   - name: ResponseSelector
+     epochs: 100
+     constrain_similarities: true
+   - name: FallbackClassifier
+     threshold: 0.6
+     ambiguity_threshold: 0.1
+     constrain_similarities: true
+

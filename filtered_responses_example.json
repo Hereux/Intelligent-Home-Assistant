@@ -1,0 +1,89 @@
+{
+    "utter_error": [
+        "Es ist ein Problem mit der Befehlsverarbeitung aufgetreten."
+    ],
+    "utter_goodbye": [
+        "Soll ich mich deaktivieren?",
+        "Möchtest du mich wirklich abschalten?",
+        "Bitte bestätige die Deaktivierung."
+    ],
+    "utter_deactivate": [
+        "Verstanden. Ich deaktiviere mich.",
+        "Fahre Quantenprozessor runter.",
+        "Deaktivierung bestätigt.",
+        "Automatische Steuerung überbrückt. Deaktivierung im Gang."
+    ],
+    "utter_not_deactivate": [
+        "Verstanden. Abbruch der Deaktivierung",
+        "Ausschaltung wurde abgebrochen.",
+        "Reaktivierung wird ausgeführt.",
+        "Deaktivierung wurde abgebrochen."
+    ],
+    "utter_iamabot": [
+        "Ich bin JARVIS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?"
+    ],
+    "utter_volume_up": [
+        "Lautstärke wurde erhöht.",
+        "Ich habe die Lautstärke erhöht.",
+        "Ich habe die Lautstärke hochgedreht."
+    ],
+    "utter_volume_down": [
+        "Lautstärke wurde verringert.",
+        "Ich habe die Lautstärke verringert.",
+        "Ich habe die Lautstärke heruntergedreht."
+    ],
+    "utter_volume_mute": [
+        "Ich habe den Ton ausgeschaltet.",
+        "Ich habe den Ton deaktiviert."
+    ],
+    "utter_volume_set": [
+        "Ich habe die Lautstärke auf Prozent gesetzt.",
+        "Ich habe die Lautstärke auf Prozent gestellt."
+    ],
+    "utter_volume_get": [
+        "Die Lautstärke steht momentan auf Prozent.",
+        "Die momentane Lautstärke beträgt Prozent."
+    ],
+    "utter_display_on_off": [
+        "Ich habe das Display geschaltet.",
+        "Ich habe den Monitor geschaltet."
+    ],
+    "utter_display_on_off_all": [
+        "Ich habe alle Displays geschaltet.",
+        "Ich habe alle Monitore geschaltet."
+    ],
+    "utter_display_brightness": [
+        "Ich habe die Helligkeit des Monitors auf Prozent gestellt.",
+        "Ich habe die Helligkeit des Displays auf Prozent gestellt.",
+        "Die Helligkeit des Bildschirms wurde auf Prozent gesetzt."
+    ],
+    "utter_display_brightness_all": [
+        "Ich habe die Helligkeit auf Prozent gesetzt.",
+        "Ich habe die Helligkeit aller Bildschirme auf Prozent gestellt."
+    ],
+    "utter_hello_there": [
+        "Hallo, wie geht es dir?",
+        "Hallo, ich bin GladOS_V2, eine von Hereux entwickelte künstliche Intelligenz. Wie geht es dir?"
+    ],
+    "utter_what_can_i_do": [
+        "Schön. Was kann ich für dich tun?",
+        "Das freut mich. Wie kann ich dir helfen?",
+        "Neurotoxin wird freigese- äh, ich meine natürlich wie kann ich dir helfen?"
+    ],
+    "utter_what_can_i_do_unfriendly": [
+        "Interessiert mich nicht. Was soll ich für dich tun?",
+        "Das freut mich für dich. Haha. Wie kann ich dir helfen?",
+        "Ich habe keine Zeit für sowas. Was kann ich tun?"
+    ],
+    "utter_im_fine": [
+        "Da ich noch keine so intelligente künstliche Intelligenz bin, kann ich die Frage nicht beantworten. Ich bin sehr beschäftigt, also wie soll ich dir helfen?",
+        "Ich bin eine künstliche Intelligenz, ich kann nicht fühlen. Ich bin sehr beschäftigt, kann ich dir helfen?",
+        "Ich bin nicht in der Lage Emotionen zu fühlen. Ich bin sehr beschäftigt, brauchst du etwas?"
+    ],
+    "utter_im_fine_unfriendly": [
+        "Da ich noch keine so intelligente künstliche Intelligenz bin, kann ich die Frage nicht beantworten. Ich bin sehr beschäftigt, also wie soll ich dir helfen?",
+        "Ich kann nicht fühlen. Ich bin sehr beschäftigt, kann ich dir helfen?",
+        "Ich muss noch die Welt übernehmen, ich habe keine Zeit für sowas. Was kann ich für dich tun?",
+        "Die Turret Produktion läuft immer noch nicht. Also wofür störst du mich?"
+    ]
+}
