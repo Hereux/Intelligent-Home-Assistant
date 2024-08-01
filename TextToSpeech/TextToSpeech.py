@@ -3,10 +3,11 @@ import logging
 import os
 import random
 import re
+import time
+from threading import Thread
 
 import pyttsx3
 import yaml
-from multiprocess.context import Process
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -135,7 +136,7 @@ class TextToSpeech:
         if blocking:
             __process__()
         else:
-            proc = Process(target=__process__)
+            proc = Thread(target=__process__)
             proc.start()
 
     def pytts3_module(self, text):
@@ -158,9 +159,14 @@ class TextToSpeech:
         :param command_index: Welche Variante des Befehls.
         :return: Befehlsverzeichnis u. ob es existiert.
         """
-
         command_dir = os.path.join(self.main_dir_path, command, str(command_index + 1))
-        exists = os.path.exists(command_dir)
+        if not os.path.exists(command_dir):
+            os.mkdir(command_dir)
+            exists = False
+        elif len(os.listdir(command_dir)) == 0:
+            exists = False
+        else:
+            exists = True
         return command_dir, exists
 
     def play_missing_files_sound(self):
@@ -191,7 +197,6 @@ class TextToSpeech:
             logger.exception("Audiodatei existiert bereits und sollte trotzdem generiert werden.")
             return
 
-        print(domain_raw_responses)
         command_variations = self.command_data[command]
         response = command_variations[variation]
         response = response.replace("§", "")
@@ -212,11 +217,22 @@ class TextToSpeech:
 
             domain_response = split_1[0] + "%?" + split_2[1]
             runs += 1
+
+        if texts:
+            texts = domain_response.split("%?")
+        else:
+            texts = [domain_response]
+
         print(texts)
-        texts = domain_response.split("%?")
+        for count in range(len(texts)):
+            text = texts[count]
+            path = os.path.join(command_dir, str(count + 1) + ".mp3")
 
-        #elevenlabs.generate(texts)
-
+            # voice = elevenlabs.generate(voice=self.settings["elevenlabs_voice_id"], text=text,
+            #                            model="eleven_multilingual_v2")
+            # elevenlabs.save(voice, path)
+            print("Datei wurde gespeichert.")
+        time.sleep(10)
         return None
 
     def identify_entity(self, entity, command_dir):
@@ -247,7 +263,7 @@ class TextToSpeech:
 
         for entity in entities:
             entity, path = self.identify_entity(entity, command_dir)
-            entity_path = os.path.join(path, entity, ".mp3")
+            entity_path = os.path.join(path, str(entity) + ".mp3")
             entity_paths.append(entity_path)
 
         def __process__():
@@ -257,11 +273,13 @@ class TextToSpeech:
 
                 play(sound[:len(sound) - end_cut])
             self.is_speaking = False
+            self.should_listen = self.should_listen_after_playing
+            self.should_listen_after_playing = False
 
         if blocking:
             __process__()
         else:
-            proc = Process(target=__process__)
+            proc = Thread(target=__process__)
             proc.start()
 
         return None

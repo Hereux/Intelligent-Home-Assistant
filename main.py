@@ -1,12 +1,12 @@
 # Author: Hereux
 import json
+from threading import Thread
 
 import colorlog
 import elevenlabs
 import pvporcupine
 import pyaudio
 import text2numde
-from multiprocess import Process
 from vosk import Model, SpkModel, KaldiRecognizer, SetLogLevel
 
 from SpeechToText import TextToCommands
@@ -120,20 +120,25 @@ class HomeAssistant:
 
     def when_missing_audio_files(self):
         if self.audio_file_gen_process is None:
-
+            print("Starting thread")
             missing_data = self.memory["missing_data"] = self.tts.missing_data
-            self.audio_file_gen_process = Process(target=self.tts.generate_audio_files, args=(missing_data,))
+            self.audio_file_gen_process = Thread(target=self.tts.generate_audio_files, args=(missing_data,))
             self.audio_file_gen_process.start()
 
         elif self.audio_file_gen_process.is_alive() is False:
+            print("THREAD IS DEAD")
             self.tts.should_listen_after_playing = self.tts.should_listen_after_generating
             self.tts.should_listen_after_generating = False
             self.tts.is_missing_files = False
-            missing_data, self.tts.is_missing_files = None, None
-            self.tts.missing_data, self.audio_file_gen_process = None, None
+            self.audio_file_gen_process = None
 
             missing_memory = self.memory["missing_data"]
-            self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1])
+            lds, exists = self.tts.get_command_path(missing_memory[0], missing_memory[2])
+            if exists:
+                self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1])
+            else:
+                print("Error: File still missing.")
+
             self.memory.clear()
 
     def manual_ttc(self, sentence: str):
@@ -160,7 +165,7 @@ class HomeAssistant:
         :return: Die Antwort auf den Befehl, ggf. mit ergänzten Werten.
         """
         received_data = None
-        if len(entities) == 0:
+        if not entities or len(entities) == 0:
             received_data = SendCommand.send_to_server(command=command)
         elif len(entities) == 1:
             received_data = SendCommand.send_to_server(command=command, slot1=entities[0])
@@ -189,6 +194,7 @@ class HomeAssistant:
                 self.cww.check_for_wakeword(porcupine=self.porcupine, pcm=pcm)
 
                 if self.tts.is_missing_files:
+                    print(self.tts.is_missing_files)
                     self.when_missing_audio_files()
 
                 if self.cww.wakeWordFound or self.tts.should_listen:

@@ -31,7 +31,6 @@ responses:
     - text: "Ha. Ha. Sehr witzig. Ich kann nichts empfinden. Was kann ich für dich tun?§"
     - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
 
-
   utter_goodbye:
     - text: "Soll ich mich deaktivieren?§"
     - text: "Möchtest du mich wirklich abschalten?§"

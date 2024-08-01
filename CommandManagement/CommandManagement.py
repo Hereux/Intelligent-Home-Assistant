@@ -26,6 +26,7 @@ class CommandManagement(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.is_running = True
+        self.last_command = None
         print(os.curdir)
         self.soundcontrol = SoundControl.SoundControl()
         self.displaycontrol = DisplayControl.DisplayControl()
@@ -48,6 +49,16 @@ class CommandManagement(threading.Thread):
             slot1 = splt[1]
             if len(splt) >= 3:
                 slot2 = splt[2]
+
+        if command == "confirmation_yes":
+            utter_message = self.last_command + "_yes"
+            last_command = None
+            conn.send(utter_message.encode())
+
+        elif command == "confirmation_no":
+            utter_message = self.last_command + "_no"
+            last_command = None
+            conn.send(utter_message.encode())
 
         print("Befehl erhalten: ", command, slot1, slot2)
         if command == "stop":
@@ -72,6 +83,7 @@ class CommandManagement(threading.Thread):
         else:
             utter_message = self.addons(command)
 
+        self.last_command = command
         if utter_message:
             logger.info(f"Senden: {utter_message}")
             conn.send(utter_message.encode())

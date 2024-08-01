@@ -31,9 +31,9 @@ class Server(threading.Thread):
             if data:
                 command = data.decode()
 
-                self.cmdmanagement.execute_command(command, conn)
-
-                conn.sendall(str('Befehl "' + command + '" ausgeführt.').encode())
+                response = self.cmdmanagement.execute_command(command, conn)
+                if response is not None:
+                    conn.sendall(str(response).encode())
     def stop_server(self):
         print("Server wird gestoppt.")
         self.is_running = False

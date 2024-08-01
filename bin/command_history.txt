@@ -1,2 +1,1 @@
 
-display_brightness_all|[100]|Ich habe die Helligkeit auf 100 Prozent gesetzt.
