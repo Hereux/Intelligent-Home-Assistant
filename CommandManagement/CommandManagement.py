@@ -44,7 +44,6 @@ class CommandManagement(threading.Thread):
 
         if command.__contains__("||"):
             splt = command.split("||")
-            print(splt)
             command = splt[0]
             slot1 = splt[1]
             if len(splt) >= 3:
@@ -52,15 +51,13 @@ class CommandManagement(threading.Thread):
 
         if command == "confirmation_yes":
             utter_message = self.last_command + "_yes"
-            last_command = None
-            conn.send(utter_message.encode())
-
+            self.last_command = None
+            return utter_message
         elif command == "confirmation_no":
             utter_message = self.last_command + "_no"
-            last_command = None
-            conn.send(utter_message.encode())
+            self.last_command = None
+            return utter_message
 
-        print("Befehl erhalten: ", command, slot1, slot2)
         if command == "stop":
             self.is_running = False
         elif command == "volume_up":
@@ -82,11 +79,10 @@ class CommandManagement(threading.Thread):
             utter_message = self.displaycontrol.display_brightness(brightness=slot2, display=slot1)
         else:
             utter_message = self.addons(command)
-
         self.last_command = command
         if utter_message:
             logger.info(f"Senden: {utter_message}")
-            conn.send(utter_message.encode())
+            return utter_message
 
     def addons(self, addon: str):
         addons = json.load(open("bin/addons.json", mode="r"))
@@ -94,7 +90,7 @@ class CommandManagement(threading.Thread):
             found_addon = addons[addon]
             pass
         except KeyError:
-            return None
+            return addon
 
         if not any(found_addon):
             logger.error("Addon nicht konfiguriert.")

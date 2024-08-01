@@ -90,7 +90,6 @@ def initialize_audio_folders(settings: dict):
 class TextToSpeech:
     def __init__(self, live_speaking=False, using_internet=False, output_device=None):
         self.missing_data = None
-        self.is_running = False
         self.is_speaking = False
         self.is_missing_files = False  # Wird auf True gesetzt, wenn eine Audiodatei noch nicht generiert wurde
         self.should_listen = False  # Wird auf True gesetzt wenn der Text gesprochen wurde.
@@ -161,7 +160,7 @@ class TextToSpeech:
         """
         command_dir = os.path.join(self.main_dir_path, command, str(command_index + 1))
         if not os.path.exists(command_dir):
-            os.mkdir(command_dir)
+            os.makedirs(command_dir)
             exists = False
         elif len(os.listdir(command_dir)) == 0:
             exists = False

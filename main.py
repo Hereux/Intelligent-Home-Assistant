@@ -49,13 +49,20 @@ RESET = '\033[0m'  # Zurück zur Standardfarbe
 
 
 class HomeAssistant:
+    """
+    Die Klasse HomeAssistant ist die Hauptklasse des Programms. Sie ist für die Steuerung des Programms zuständig.
+    Der HomeAssistant hört auf ein Wakeword, erkennt den gesprochenen Text und führt dann den entsprechenden Befehl aus.
+    Das Programm befindet sich mitten in der Entwicklungsphase und wird ständig weiterentwickelt.
+    Powered by Hereux. All rights reserved!
+    """
+
     def __init__(self):
         super().__init__()
         self.using_rasa = bool(settings["using_rasa"])
         self.is_running = True
         self.kaldi_recognizer = None
         self.audio_stream = None
-        self.__write_to_txt__("", reset=True)
+        utils.__write_to_txt__("", reset=True)
         self.audio_file_gen_process = None
         self.memory = {}
 
@@ -81,10 +88,13 @@ class HomeAssistant:
         utils.writetojson("settings", "speakers", self.speakers)
 
     def __get_speakers__(self):
+        """
+        Gibt eine gefilterte Liste aller Lautsprecher zurück.
+        :return: List[device_info.get("name")]
+        """
         speakers = []
         for device_count in range(self.pa.get_device_count()):
             device_info = self.pa.get_device_info_by_index(device_count)
-
             # Filter unwanted audio drivers
             if device_info.get("hostApi") != 2:
                 continue
@@ -96,19 +106,11 @@ class HomeAssistant:
 
         return speakers
 
-    @staticmethod
-    def __write_to_txt__(text: str, reset: bool = False):
-        if reset:
-            mode = "w"
-        else:
-            mode = "a"
-
-        with open("bin/command_history.txt", mode, encoding="utf-8") as file:
-            file.writelines([f"{text}", "\n"])
-            file.close()
-        return True
-
     def get_audio_stream(self):  # Startet den Audio Stream
+        """
+        Startet den Audio Stream von Porcupine.
+        :return: type: Stream
+        """
         self.audio_stream = self.pa.open(
             rate=self.porcupine.sample_rate,
             channels=1,
@@ -148,7 +150,7 @@ class HomeAssistant:
         :return: None
         """
         command, response, entities = self.ttc.manual_text_to_commands(sentence)
-        self.__write_to_txt__(f"{command}|{entities}|{response}")
+        utils.__write_to_txt__(f"{command}|{entities}|{response}")
 
         if command == "error":
             logger.error("Fehler mit dem ausführenden Befehlsclient.")
@@ -172,6 +174,7 @@ class HomeAssistant:
         elif len(entities) == 2:
             received_data = SendCommand.send_to_server(command=command, slot1=entities[0],
                                                        slot2=entities[1])
+
         return received_data if received_data is not None else response
 
     def text_to_speech(self, command: str, entities: list, response: str):
@@ -228,8 +231,8 @@ class HomeAssistant:
                     command, entities, response = self.manual_ttc(sentence)
 
                 # BEFEHLS-AUSFÜHRUNG
-                self.send_command_to_client(command, entities, response)
-
+                command = self.send_command_to_client(command, entities, response)
+                print("Command: " + command)
                 # SPRACH-AUSGABE
                 self.text_to_speech(command, entities, response)
 
@@ -242,9 +245,8 @@ class HomeAssistant:
         self.server.stop_server()
         self.audio_stream.close()
         self.pa.terminate()
-        print("Home Assistant stopped")
-
         self.porcupine.delete()
+        print("Home Assistant stopped")
 
         self.is_running = False
 

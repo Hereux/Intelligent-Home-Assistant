@@ -31,18 +31,24 @@ responses:
     - text: "Ha. Ha. Sehr witzig. Ich kann nichts empfinden. Was kann ich für dich tun?§"
     - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
 
+  utter_confirmation_yes:
+    - text: "Default_yes"
+
+  utter_confirmation_no:
+    - text: "Default_no"
+
   utter_goodbye:
     - text: "Soll ich mich deaktivieren?§"
     - text: "Möchtest du mich wirklich abschalten?§"
     - text: "Bitte bestätige die Deaktivierung.§"
 
-  utter_deactivate:
+  utter_goodbye_yes:
     - text: "Verstanden. Ich deaktiviere mich."
     - text: "Fahre Quantenprozessor runter."
     - text: "Deaktivierung bestätigt."
     - text: "Automatische Steuerung überbrückt. Deaktivierung im Gang."
 
-  utter_not_deactivate:
+  utter_goodbye_no:
     - text: "Verstanden. Abbruch der Deaktivierung"
     - text: "Ausschaltung wurde abgebrochen."
     - text: "Reaktivierung wird ausgeführt."
@@ -117,6 +123,11 @@ responses:
 
   utter_mistake:
     - text: "."
+
+  utter_fallback:
+    - text: "Entschuldigung, ich habe dich nicht verstanden. Kannst du das bitte wiederholen?§"
+    - text: "Tut mir leid, ich habe dich nicht verstanden. Kannst du das bitte nochmal sagen?§"
+    - text: "Ich habe dich nicht verstanden. Kannst du das bitte wiederholen?§"
 
   utter_internet_error:
     - text: "Kritischer Systemfehler. Das Internet ist deaktiviert oder nicht erreichbar."

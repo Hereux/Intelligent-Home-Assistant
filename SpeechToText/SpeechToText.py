@@ -21,6 +21,10 @@ def writetojson(variable, value):
 
 
 class SpeechToText:
+    """
+    Diese Klasse ist für die Spracherkennung zuständig. Sie kann den Nutzer identifizieren und die Sprache in Text
+    umwandeln.
+    """
 
     def __init__(self):
         super().__init__()
@@ -31,6 +35,11 @@ class SpeechToText:
         self.best_cosdist = 100
 
     def get_speaker(self, uservoice):
+        """
+        Diese Methode identifiziert den Nutzer anhand seines Stimmprofils.
+        :param uservoice: Das aktuelle Stimmprofil des Nutzers
+        :return: Den Namen des wahrscheinlichsten Nutzers
+        """
         for user in all_users:
             user = all_users[user]
 
@@ -57,6 +66,13 @@ class SpeechToText:
         return self.best_speaker
 
     def listen(self, pcm, kaldi_recognizer):
+        """
+        Diese Methode wandelt Sprache in Text um. Verwendet wird die Kaldi Spracherkennung.
+        Es wird auch die Nutzererkennung aufgerufen, um den Nutzer zu identifizieren.
+        :param pcm: Der Audiostream im PCM Format
+        :param kaldi_recognizer: Der Kaldi Spracherkennungs-Client
+        :return: Den erkannten Text und den Nutzer.
+        """
         user = None
         self.is_listening = True
         # Spracherkennung
@@ -81,8 +97,13 @@ class SpeechToText:
 
             self.result_sentence = sentence
             self.result_user = user
+            return sentence, user
 
     def stop_listening(self):
+        """
+        Diese Methode stoppt die Spracherkennung.
+        :return: None
+        """
         self.is_listening = False
         self.result_sentence = None
         self.result_user = None

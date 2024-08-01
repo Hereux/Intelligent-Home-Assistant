@@ -19,12 +19,11 @@ class Server(threading.Thread):
         self.cmdmanagement.start()
 
     def run(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((HOST, PORT))
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.bind((HOST, PORT))
 
         while self.is_running:
-            print("Server läuft.")
-            s.listen(1)
+            self.socket.listen(1)
             conn, addr = s.accept()
             # print('Verbindung mit ', addr, " gefunden und hergestellt.")
             data = conn.recv(1024)
@@ -32,8 +31,11 @@ class Server(threading.Thread):
                 command = data.decode()
 
                 response = self.cmdmanagement.execute_command(command, conn)
+                print(response)
                 if response is not None:
                     conn.sendall(str(response).encode())
+
     def stop_server(self):
         print("Server wird gestoppt.")
         self.is_running = False
+        self.socket.close()

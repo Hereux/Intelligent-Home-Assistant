@@ -75,7 +75,8 @@ nlu:
 
 - intent: confirmation_yes
   examples: |
-    - Ja 
+    - ja
+    - Ja
     - Ja bitte
     - Bestätigen
     - Bite doch

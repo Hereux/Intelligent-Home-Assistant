@@ -60,6 +60,23 @@ radios = {
 }
 
 
+def __write_to_txt__(text: str, reset: bool = False):
+    """
+    Schreibt den Text in eine Textdatei.
+    :param text:
+    :param reset:
+    :return:
+    """
+    if reset:
+        mode = "w"
+    else:
+        mode = "a"
+
+    with open("bin/command_history.txt", mode, encoding="utf-8") as file:
+        file.writelines([f"{text}", "\n"])
+        file.close()
+    return True
+
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
     return new.join(li)
