@@ -24,16 +24,14 @@ class Server(threading.Thread):
 
         while self.is_running:
             self.socket.listen(1)
-            conn, addr = s.accept()
+            conn, addr = self.socket.accept()
             # print('Verbindung mit ', addr, " gefunden und hergestellt.")
             data = conn.recv(1024)
             if data:
                 command = data.decode()
-
                 response = self.cmdmanagement.execute_command(command, conn)
-                print(response)
-                if response is not None:
-                    conn.sendall(str(response).encode())
+
+                conn.sendall(str(response).encode())
 
     def stop_server(self):
         print("Server wird gestoppt.")

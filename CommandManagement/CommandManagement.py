@@ -1,5 +1,4 @@
 import json
-import os
 import socket
 import subprocess
 import threading
@@ -27,7 +26,6 @@ class CommandManagement(threading.Thread):
         threading.Thread.__init__(self)
         self.is_running = True
         self.last_command = None
-        print(os.curdir)
         self.soundcontrol = SoundControl.SoundControl()
         self.displaycontrol = DisplayControl.DisplayControl()
         #self.TuyaSmart = TuyaSmart.TuyaSmart()
@@ -80,9 +78,12 @@ class CommandManagement(threading.Thread):
         else:
             utter_message = self.addons(command)
         self.last_command = command
+
         if utter_message:
             logger.info(f"Senden: {utter_message}")
             return utter_message
+        else:
+            return "None"
 
     def addons(self, addon: str):
         addons = json.load(open("bin/addons.json", mode="r"))

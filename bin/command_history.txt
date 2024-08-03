@@ -1,1 +1,2 @@
 
+display_brightness_all|[30]|Ich habe die Helligkeit aller Bildschirme auf 30 Prozent gestellt.

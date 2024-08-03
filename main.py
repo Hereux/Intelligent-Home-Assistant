@@ -122,13 +122,13 @@ class HomeAssistant:
 
     def when_missing_audio_files(self):
         if self.audio_file_gen_process is None:
-            print("Starting thread")
+            logger.info("Starting thread")
             missing_data = self.memory["missing_data"] = self.tts.missing_data
             self.audio_file_gen_process = Thread(target=self.tts.generate_audio_files, args=(missing_data,))
             self.audio_file_gen_process.start()
 
         elif self.audio_file_gen_process.is_alive() is False:
-            print("THREAD IS DEAD")
+            logger.info("THREAD IS DEAD")
             self.tts.should_listen_after_playing = self.tts.should_listen_after_generating
             self.tts.should_listen_after_generating = False
             self.tts.is_missing_files = False
@@ -136,10 +136,12 @@ class HomeAssistant:
 
             missing_memory = self.memory["missing_data"]
             lds, exists = self.tts.get_command_path(missing_memory[0], missing_memory[2])
+            print(missing_memory)
             if exists:
-                self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1])
+                self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1],
+                                           command_index=missing_memory[2])
             else:
-                print("Error: File still missing.")
+                logger.warning("Error: File still missing.")
 
             self.memory.clear()
 
@@ -197,7 +199,6 @@ class HomeAssistant:
                 self.cww.check_for_wakeword(porcupine=self.porcupine, pcm=pcm)
 
                 if self.tts.is_missing_files:
-                    print(self.tts.is_missing_files)
                     self.when_missing_audio_files()
 
                 if self.cww.wakeWordFound or self.tts.should_listen:
@@ -226,13 +227,16 @@ class HomeAssistant:
                 # BEFEHLS-ERKENNUNG
                 if self.using_rasa:
                     response = self.ttc.get_rasa_response(sentence=sentence)
-                    print("RASA Response: " + response)
+                    logger.info("RASA Response: " + response)
                 else:
                     command, entities, response = self.manual_ttc(sentence)
 
                 # BEFEHLS-AUSFÜHRUNG
-                command = self.send_command_to_client(command, entities, response)
-                print("Command: " + command)
+                command_response = self.send_command_to_client(command, entities, response)
+                if command_response and command_response != "None":
+                    command = command_response
+                    logger.info("Command: " + command)
+
                 # SPRACH-AUSGABE
                 self.text_to_speech(command, entities, response)
 

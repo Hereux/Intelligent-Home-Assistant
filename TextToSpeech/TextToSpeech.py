@@ -3,9 +3,9 @@ import logging
 import os
 import random
 import re
-import time
 from threading import Thread
 
+import elevenlabs
 import pyttsx3
 import yaml
 from pydub import AudioSegment
@@ -203,7 +203,7 @@ class TextToSpeech:
         domain_response = domain_raw_responses["utter_" + command]
         domain_response = domain_response[variation]["text"]
 
-        logger.debug(f"Response: {response}")
+        print(f"Response: {response}")
 
         runs = 0
         texts = []
@@ -222,16 +222,14 @@ class TextToSpeech:
         else:
             texts = [domain_response]
 
-        print(texts)
+        logger.info(texts)
         for count in range(len(texts)):
             text = texts[count]
             path = os.path.join(command_dir, str(count + 1) + ".mp3")
 
-            # voice = elevenlabs.generate(voice=self.settings["elevenlabs_voice_id"], text=text,
-            #                            model="eleven_multilingual_v2")
-            # elevenlabs.save(voice, path)
-            print("Datei wurde gespeichert.")
-        time.sleep(10)
+            voice = elevenlabs.generate(voice=self.settings["elevenlabs_voice_id"], text=text,
+                                        model="eleven_multilingual_v2")
+            elevenlabs.save(voice, path)
         return None
 
     def identify_entity(self, entity, command_dir):
@@ -283,30 +281,35 @@ class TextToSpeech:
 
         return None
 
-    def elevenlabs_module(self, command, entities):
+    def elevenlabs_module(self, command, entities, command_index=None):
         """
         Dieser Code existiert aus folgendem Grund. Texte immer direkt über ElevenLabs zu generieren ist teuer.
         Deshalb werden die Texte in einer Ordnerstruktur gespeichert und nur bei Bedarf neu generiert.
         Die folgende Funktion prüft, ob die Audiodatei bereits existiert. Wenn nicht, wird sie generiert.
         :param command: Die Befehlsbezeichnung.
         :param entities: Die Daten.
+        :param command_index: Welche Antworten-Variante des Befehls.
         :return:
         """
 
         if command not in self.command_data:
             logger.error("Befehl ist erkannt worden, ist aber nicht in der Domain Datei vorhanden.")
             return
+
         command_variations = self.command_data[command]
-        response = random.choice(command_variations)
-        command_index = command_variations.index(response)
+        if command_index:
+            response = command_variations[command_index]
+        else:
+            response = random.choice(command_variations)
+            command_index = command_variations.index(response)
 
         if response.__contains__("§"):
             self.should_listen_after_playing = True
 
         command_dir, exists = self.get_command_path(command, command_index)
         logger.debug(f"Command Dir: {command_dir} | Exists: {exists}")
+
         if not exists:
-            logger.info("Audiodatei existiert nicht. Generiere Audiodatei.")
             self.missing_data = [command, entities, command_index]
             self.is_missing_files = True
 
