@@ -7,6 +7,8 @@ import colorlog
 import requests
 import yaml
 
+from SpeechToText import RecognitionExceptions
+
 settings = json.load(
     open("bin/settings.json", "r", encoding="utf-8")
 )
@@ -30,6 +32,14 @@ GREEN = '\033[92m'
 RESET = '\033[0m'  # Zurück zur Standardfarbe
 
 
+def __read_yaml__(path: str):
+    with open(f"{path}", "r", encoding="utf-8") as file:
+        yaml_file = yaml.safe_load(file)
+        if yaml_file is None:
+            raise Exception("YAML File is empty.")
+        return yaml_file
+
+
 class TextToCommands:
 
     def __init__(self):
@@ -40,8 +50,8 @@ class TextToCommands:
         self.current_vars = {}
         self.wrong_words = ["eine", "einen", "einer", "einem", "eines", "nein"]
 
-        nlu_data = self.__read_yaml__("bin/rasa/data/nlu.yml")["nlu"]
-        self.domain_data = self.__read_yaml__("bin/rasa/domain.yml")
+        nlu_data = __read_yaml__("bin/rasa/data/nlu.yml")["nlu"]
+        self.domain_data = __read_yaml__("bin/rasa/domain.yml")
 
         if not nlu_data or not self.domain_data:
             raise Exception("No data found.")
@@ -98,13 +108,6 @@ class TextToCommands:
         except Exception as e:
             print("Rasa Returned:", e)
             return ERROR_CODES[1]
-
-    def __read_yaml__(self, path: str):
-        with open(f"{path}", "r", encoding="utf-8") as file:
-            yaml_file = yaml.safe_load(file)
-            if yaml_file is None:
-                raise Exception("YAML File is empty.")
-            return yaml_file
 
     def get_similarity(self, input_sentence: str, sentence: str):
         seq = difflib.SequenceMatcher(None, input_sentence, sentence)
@@ -165,7 +168,7 @@ class TextToCommands:
 
             for sentence in examples:
                 # Falls es ein exaktes Match gibt, wird der Intent direkt gesetzt
-                if input_sentence in sentence:
+                if input_sentence is sentence:
                     logger.debug(f"{BLUE}Exaktes Match gefunden: {RESET}{intent}")
                     intent_similarities[intent] = 100
                     break
@@ -182,16 +185,13 @@ class TextToCommands:
             best_intent = max(intent_similarities, key=intent_similarities.get)
             similarity = intent_similarities[best_intent]
 
-        logger.info(f"{BLUE}Höchste Wahrscheinlichkeit: {RESET}{best_intent}{GREEN} | {RESET}{similarity}%%")
-        #logger.info(f"{intent_similarities}")
+        best_intent, entities, similarity = RecognitionExceptions.recognition_exceptions(best_intent, entities,
+                                                                                         similarity)
 
-        if self.commands[best_intent][1] != len(entities):
-            logger.warning("Anzahl der Entities stimmt nicht überein.")
-            best_intent = "error"
-            pass
-        elif intent_similarities[best_intent] < 50:
-            logger.warning("Kein passender Befehl gefunden.")
-            logger.info(intent_similarities)
+        logger.info(f"{BLUE}Höchste Wahrscheinlichkeit: {RESET}{best_intent}{GREEN} | {RESET}{similarity}%%")
+
+        if intent_similarities[best_intent] < 50:
+            logger.warning("Die Wahrscheinlichkeit ist unter 50%.")
             best_intent = "error"
             pass
 

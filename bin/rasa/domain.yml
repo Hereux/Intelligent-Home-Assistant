@@ -31,26 +31,31 @@ responses:
     - text: "Ha. Ha. Sehr witzig. Ich kann nichts empfinden. Was kann ich für dich tun?§"
     - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
 
+  utter_confirmation_yes:
+    - text: "confirmation_yes"
+
+  utter_confirmation_no:
+    - text: "confirmation_no"
 
   utter_goodbye:
     - text: "Soll ich mich deaktivieren?§"
     - text: "Möchtest du mich wirklich abschalten?§"
     - text: "Bitte bestätige die Deaktivierung.§"
 
-  utter_deactivate:
+  utter_goodbye_yes:
     - text: "Verstanden. Ich deaktiviere mich."
     - text: "Fahre Quantenprozessor runter."
     - text: "Deaktivierung bestätigt."
     - text: "Automatische Steuerung überbrückt. Deaktivierung im Gang."
 
-  utter_not_deactivate:
+  utter_goodbye_no:
     - text: "Verstanden. Abbruch der Deaktivierung"
     - text: "Ausschaltung wurde abgebrochen."
     - text: "Reaktivierung wird ausgeführt."
     - text: "Deaktivierung wurde abgebrochen."
 
-  utter_iamabot:
-  - text: "Ich bin JARVIS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§"
+  utter_bot_challenge:
+    - text: "Ich bin GladOS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§"
 
   utter_volume_up:
     - text: "Lautstärke wurde erhöht."
@@ -95,7 +100,7 @@ responses:
     - text: "Das freut mich. Wie kann ich dir helfen?§"
     - text: "Neurotoxin wird freigese- äh, ich meine natürlich wie kann ich dir helfen?§"
 
-  utter_what_can_i_do_unfriendly:
+  utter_im_not_fine:
     - text: "Interessiert mich nicht. Was soll ich für dich tun§?"
     - text: "Das freut mich für dich. Haha. Wie kann ich dir helfen?§"
     - text: "Ich habe keine Zeit für sowas. Was kann ich tun?§"
@@ -118,6 +123,11 @@ responses:
 
   utter_mistake:
     - text: "."
+
+  utter_fallback:
+    - text: "Entschuldigung, ich habe dich nicht verstanden. Kannst du das bitte wiederholen?§"
+    - text: "Tut mir leid, ich habe dich nicht verstanden. Kannst du das bitte nochmal sagen?§"
+    - text: "Ich habe dich nicht verstanden. Kannst du das bitte wiederholen?§"
 
   utter_internet_error:
     - text: "Kritischer Systemfehler. Das Internet ist deaktiviert oder nicht erreichbar."

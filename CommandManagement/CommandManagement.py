@@ -1,5 +1,4 @@
 import json
-import os
 import socket
 import subprocess
 import threading
@@ -9,6 +8,8 @@ import colorlog
 logger = colorlog.getLogger("AIVoiceAssistant_HX")
 
 from CommandManagement import SoundControl, DisplayControl
+
+
 # TuyaSmart
 
 
@@ -26,7 +27,7 @@ class CommandManagement(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.is_running = True
-        print(os.curdir)
+        self.last_command = None
         self.soundcontrol = SoundControl.SoundControl()
         self.displaycontrol = DisplayControl.DisplayControl()
         #self.TuyaSmart = TuyaSmart.TuyaSmart()
@@ -36,20 +37,20 @@ class CommandManagement(threading.Thread):
         slot2 = None
         utter_message = None
         if not command:
-            print("Kein Befehl erhalten")
-            return "Kein Befehl erhalten."
+            logger.warning("Kein Befehl erhalten")
+            return "mistake"
         elif command.__contains__("action_"):
             command = command.split("action_")[1]
 
         if command.__contains__("||"):
             splt = command.split("||")
-            print(splt)
             command = splt[0]
             slot1 = splt[1]
             if len(splt) >= 3:
                 slot2 = splt[2]
 
-        print("Befehl erhalten: ", command, slot1, slot2)
+        command = self.confirmation_exceptions(command)
+
         if command == "stop":
             self.is_running = False
         elif command == "volume_up":
@@ -71,10 +72,13 @@ class CommandManagement(threading.Thread):
             utter_message = self.displaycontrol.display_brightness(brightness=slot2, display=slot1)
         else:
             utter_message = self.addons(command)
+        self.last_command = command
 
         if utter_message:
-            logger.info("Senden:", utter_message)
-            conn.send(utter_message.encode())
+            logger.info(f"Senden: {utter_message}")
+            return utter_message
+        else:
+            return "None"
 
     def addons(self, addon: str):
         addons = json.load(open("bin/addons.json", mode="r"))
@@ -82,7 +86,7 @@ class CommandManagement(threading.Thread):
             found_addon = addons[addon]
             pass
         except KeyError:
-            return None
+            return addon
 
         if not any(found_addon):
             logger.error("Addon nicht konfiguriert.")
@@ -97,3 +101,30 @@ class CommandManagement(threading.Thread):
             else:
                 subprocess.Popen(found_addon["path"], shell=True).wait()
             return found_addon["utter_message"]
+
+    def confirmation_exceptions(self, command: str):
+        """
+        Dieser Teil ist Hardcoded und wird für außergewöhnliche Fälle verwendet.
+        :param command:
+        :return:
+        """
+        print(f"Last Command: {self.last_command}")
+        utter_message = command
+
+        if self.last_command and command in ["confirmation_yes", "confirmation_no"] is None:
+            return "mistake"
+
+        if command == "confirmation_yes":
+            # Hardcode the exceptions
+            if self.last_command == "goodbye":
+                utter_message = self.last_command + "_yes"
+
+        if command == "confirmation_no":
+            # Hardcode the exceptions
+            if self.last_command == "goodbye":
+                utter_message = self.last_command + "_no"
+
+        self.last_command = None
+        if utter_message in ["confirmation_yes", "confirmation_no"]:
+            return "mistake"
+        return utter_message

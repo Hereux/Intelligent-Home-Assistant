@@ -3,10 +3,12 @@ import logging
 import os
 import random
 import re
+import time
+from threading import Thread
 
+import elevenlabs
 import pyttsx3
 import yaml
-from multiprocess import Process
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -16,12 +18,15 @@ from bin.utils import alternate_lists
 logger = logging.getLogger("AIVoiceAssistant_HX")
 
 domain = yaml.load(open("bin/rasa/domain.yml", "r", encoding="utf-8"), Loader=yaml.Loader)
-responses = domain["responses"]
+domain_raw_responses = domain["responses"]
 
 filtered_responses = {
     "utter_error": [
         "Es ist ein Fehler aufgetreten.", "Es ist ein Problem mit der Befehlsverarbeitung aufgetreten.",
         "Ich habe dich nicht verstanden."
+    ],
+    "missing_audio_files": [
+        "Die Audiodatei existiert nicht. Sie wird generiert."
     ]
 }
 
@@ -31,7 +36,7 @@ def initalize_command_data():
     Lädt die Befehlsdaten aus der Domain Datei in ein Dictionary
     :return: Ein Dictionary mit den Befehlsdaten
     """
-    for key, value in responses.items():
+    for key, value in domain_raw_responses.items():
         filtered_texts = []
         for ttext in value:
             ttext = ttext["text"]
@@ -84,9 +89,8 @@ def initialize_audio_folders(settings: dict):
 
 
 class TextToSpeech:
-    def __init__(self, live_speaking=True, using_internet=True, output_device=None):
+    def __init__(self, live_speaking=False, using_internet=False, output_device=None):
         self.missing_data = None
-        self.is_running = False
         self.is_speaking = False
         self.is_missing_files = False  # Wird auf True gesetzt, wenn eine Audiodatei noch nicht generiert wurde
         self.should_listen = False  # Wird auf True gesetzt wenn der Text gesprochen wurde.
@@ -128,12 +132,59 @@ class TextToSpeech:
             if self.should_listen_after_playing:
                 self.should_listen = True
                 self.should_listen_after_playing = False
+
         if blocking:
             __process__()
         else:
-            print("Not Blocking")
-            proc = Process(target=__process__)
+            proc = Thread(target=__process__)
             proc.start()
+
+    def play_multiple_files(self, entities: list, command_dir, blocking=False, end_cut=0) -> None:
+        """
+        Spielt mehrere Audiodateien ab.
+        :param entities: Die Liste mit den Entitäten.
+        :param command_dir: Der Pfad zu den Audiodateien.
+        :param end_cut: Der Wert in Millisekunden, um den die Audiodatei gekürzt werden soll.
+        :param blocking: Ob der Code blockiert werden soll.
+        :return: None
+        """
+        command_files = os.listdir(command_dir)
+        command_files_paths = [os.path.join(command_dir, file) for file in command_files]
+        entity_paths = []
+
+        for entity in entities:
+            entity, path = self.identify_entity(entity, command_dir)
+            entity_path = os.path.join(path, str(entity) + ".mp3")
+            entity_paths.append(entity_path)
+
+        def __process__():
+
+            while self.is_speaking:  # Wartet, bis das Sprechen beendet ist
+                time.sleep(0.2)
+                continue
+
+            self.is_speaking = True
+            for audio_path in alternate_lists(command_files_paths, entity_paths):
+                sound = AudioSegment.from_mp3(audio_path)
+
+                play(sound[:len(sound) - end_cut])
+
+            # Gibt dem Nutzer einen Moment Zeit zum überlegen
+            time.sleep(0.5)
+            self.is_speaking = False
+            logger.info([self.should_listen_after_playing, self.should_listen_after_generating])
+            if not self.should_listen_after_generating and not self.should_listen_after_playing:
+                self.play_sound(self.settings["vrecog_deactivation_sound"], blocking=True)
+            self.should_listen = self.should_listen_after_playing
+            self.should_listen_after_playing = False
+
+        if blocking:
+            __process__()
+        else:
+            proc = Thread(target=__process__)
+            proc.start()
+
+        return None
 
     def pytts3_module(self, text):
         """
@@ -155,9 +206,14 @@ class TextToSpeech:
         :param command_index: Welche Variante des Befehls.
         :return: Befehlsverzeichnis u. ob es existiert.
         """
-
-        command_dir = os.path.join(self.main_dir_path, command, str(command_index+1))
-        exists = os.path.exists(command_dir)
+        command_dir = os.path.join(self.main_dir_path, command, str(command_index + 1))
+        if not os.path.exists(command_dir):
+            os.makedirs(command_dir)
+            exists = False
+        elif len(os.listdir(command_dir)) == 0:
+            exists = False
+        else:
+            exists = True
         return command_dir, exists
 
     def play_missing_files_sound(self):
@@ -166,9 +222,63 @@ class TextToSpeech:
         :return: None
         """
 
-        audio_files = self.command_data["missing_audio_files"]
+        audio_files = os.listdir(self.missing_audio_files_path)
         audio_file = random.choice(audio_files)
-        self.play_multiple_files([], audio_file, blocking=False)
+        audio_file_path = os.path.join(self.missing_audio_files_path, audio_file)
+        self.play_multiple_files([], audio_file_path, blocking=False)
+        return None
+
+    def generate_audio_files(self, missing_data):
+        """
+        Generiert die fehlenden Audiodateien.
+        :param missing_data: Die fehlenden Daten.
+        :return: None
+        """
+        self.should_listen_after_playing = False
+        command, entities, variation = missing_data
+        command_dir, exists = self.get_command_path(command, variation)
+
+        if not self.using_internet or not utils.check_for_internet():
+            logger.error("Keine Internetverbindung vorhanden.")
+            return
+        if exists:
+            logger.exception("Audiodatei existiert bereits und sollte trotzdem generiert werden.")
+            return
+
+        command_variations = self.command_data[command]
+        response = command_variations[variation]
+        response = response.replace("§", "")
+
+        domain_response = domain_raw_responses["utter_" + command]
+        domain_response = domain_response[variation]["text"]
+
+        print(f"Response: {response}")
+
+        runs = 0
+        texts = []
+        while "{" in domain_response:
+            # removes brackets, extracts entity name
+            split_1 = domain_response.split("{", 1)
+            split_2 = split_1[1].split("}", 1)
+
+            texts.append(split_1[0])
+
+            domain_response = split_1[0] + "%?" + split_2[1]
+            runs += 1
+
+        if texts:
+            texts = domain_response.split("%?")
+        else:
+            texts = [domain_response]
+
+        logger.info(texts)
+        for count in range(len(texts)):
+            text = texts[count]
+            path = os.path.join(command_dir, str(count + 1) + ".mp3")
+
+            voice = elevenlabs.generate(voice=self.settings["elevenlabs_voice_id"], text=text,
+                                        model="eleven_multilingual_v2")
+            elevenlabs.save(voice, path)
         return None
 
     def identify_entity(self, entity, command_dir):
@@ -178,78 +288,43 @@ class TextToSpeech:
         :param entity: Die Entität.
         :return: None
         """
-        if entity.isdigit():
+        if int == type(entity) or entity.isdigit():
             return str(entity), self.number_path
         if entity in ["ein", "an", "aus"]:
             return str(entity), self.special_entities_path
         return str(entity), command_dir
 
-    def play_multiple_files(self, entities: list, command_dir, blocking=False, end_cut=0) -> None:
-        """
-        Spielt mehrere Audiodateien ab.
-        :param entities: Die Liste mit den Entitäten.
-        :param command_dir: Der Pfad zu den Audiodateien.
-        :param end_cut: Der Wert in Millisekunden, um den die Audiodatei gekürzt werden soll.
-        :param blocking: Ob der Code blockiert werden soll.
-        :return: None
-        """
-        command_files = os.listdir(command_dir)
-        command_files_paths = [os.path.join(command_dir, file) for file in command_files]
-        entity_paths = []
-
-        for entity in entities:
-            entity, path = self.identify_entity(entity, command_dir)
-            entity_path = os.path.join(path, entity)
-            entity_paths.append(entity_path)
-
-        def __process__():
-            self.is_speaking = True
-            print(command_files_paths, entity_paths)
-            for audio_path in alternate_lists(command_files_paths, entity_paths):
-
-                sound = AudioSegment.from_mp3(audio_path)
-
-                play(sound[:len(sound) - end_cut])
-            self.is_speaking = False
-
-        if blocking:
-            print("Blocking")
-            __process__()
-        else:
-            print("Not Blocking")
-            proc = Process(target=__process__)
-            proc.start()
-
-        return None
-
-    def elevenlabs_module(self, command, entities):
+    def elevenlabs_module(self, command, entities, command_index=None):
         """
         Dieser Code existiert aus folgendem Grund. Texte immer direkt über ElevenLabs zu generieren ist teuer.
         Deshalb werden die Texte in einer Ordnerstruktur gespeichert und nur bei Bedarf neu generiert.
         Die folgende Funktion prüft, ob die Audiodatei bereits existiert. Wenn nicht, wird sie generiert.
         :param command: Die Befehlsbezeichnung.
         :param entities: Die Daten.
+        :param command_index: Welche Antworten-Variante des Befehls.
         :return:
         """
 
         if command not in self.command_data:
             logger.error("Befehl ist erkannt worden, ist aber nicht in der Domain Datei vorhanden.")
             return
+
         command_variations = self.command_data[command]
-        response = random.choice(command_variations)
-        command_index = command_variations.index(response)
+        if command_index:
+            response = command_variations[command_index]
+        else:
+            response = random.choice(command_variations)
+            command_index = command_variations.index(response)
 
         if response.__contains__("§"):
             self.should_listen_after_playing = True
-            response = response.replace("§", "")
 
         command_dir, exists = self.get_command_path(command, command_index)
         logger.debug(f"Command Dir: {command_dir} | Exists: {exists}")
-        if not exists:
-            logger.info("Audiodatei existiert nicht. Generiere Audiodatei.")
-            self.missing_data = [command, entities]
-            self.is_missing_files = True
 
+        if not exists:
+            self.missing_data = [command, entities, command_index]
+            self.is_missing_files = True
 
             # Falls die Audiodatei noch nicht existiert, wird das zuhören verschoben
             self.should_listen_after_generating = self.should_listen_after_playing

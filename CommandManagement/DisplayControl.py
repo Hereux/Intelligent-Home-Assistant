@@ -65,19 +65,19 @@ class DisplayControl:
         if display == "alle":
             for dis in range(1, monitors + 1):
                 self.execute(cmd, dis)
-            return "alle"
+            return
         else:
             self.execute(cmd, display)
-            return "einzel"
+            return
 
     def display_brightness(self, brightness, display):
         if brightness and display == "alle":
             for dis in range(1, monitors + 1):
                 self.execute(brightness, dis)
-            return "alle"
+            return
 
         elif brightness and display:
             self.execute(brightness, display)
-            return "einzel"
+            return
         else:
-            return "Ich konnte dich leider nicht verstehen."
+            return

@@ -1,13 +1,12 @@
 # Author: Hereux
 import json
-import time
+from threading import Thread
 
 import colorlog
 import elevenlabs
 import pvporcupine
 import pyaudio
 import text2numde
-from multiprocess import Process
 from vosk import Model, SpkModel, KaldiRecognizer, SetLogLevel
 
 from SpeechToText import TextToCommands
@@ -28,7 +27,7 @@ using_internet = not bool(settings["offline_mode"])
 vosk_log_level = int(settings["vosk_log_level"])
 SetLogLevel(vosk_log_level)
 logger = colorlog.getLogger("AIVoiceAssistant_HX")
-logger.setLevel(colorlog.DEBUG)
+logger.setLevel(colorlog.INFO)
 handler = colorlog.StreamHandler()
 handler.setFormatter(colorlog.ColoredFormatter(
     "%(log_color)s%(levelname)-8s%(reset)s %(white)s%(message)s %(reset)s",
@@ -50,13 +49,20 @@ RESET = '\033[0m'  # Zurück zur Standardfarbe
 
 
 class HomeAssistant:
+    """
+    Die Klasse HomeAssistant ist die Hauptklasse des Programms. Sie ist für die Steuerung des Programms zuständig.
+    Der HomeAssistant hört auf ein Wakeword, erkennt den gesprochenen Text und führt dann den entsprechenden Befehl aus.
+    Das Programm befindet sich mitten in der Entwicklungsphase und wird ständig weiterentwickelt.
+    Powered by Hereux. All rights reserved!
+    """
+
     def __init__(self):
         super().__init__()
         self.using_rasa = bool(settings["using_rasa"])
         self.is_running = True
         self.kaldi_recognizer = None
         self.audio_stream = None
-        self.__write_to_txt__("", reset=True)
+        utils.__write_to_txt__("", reset=True)
         self.audio_file_gen_process = None
         self.memory = {}
 
@@ -82,10 +88,13 @@ class HomeAssistant:
         utils.writetojson("settings", "speakers", self.speakers)
 
     def __get_speakers__(self):
+        """
+        Gibt eine gefilterte Liste aller Lautsprecher zurück.
+        :return: List[device_info.get("name")]
+        """
         speakers = []
         for device_count in range(self.pa.get_device_count()):
             device_info = self.pa.get_device_info_by_index(device_count)
-
             # Filter unwanted audio drivers
             if device_info.get("hostApi") != 2:
                 continue
@@ -97,19 +106,11 @@ class HomeAssistant:
 
         return speakers
 
-    @staticmethod
-    def __write_to_txt__(text: str, reset: bool = False):
-        if reset:
-            mode = "w"
-        else:
-            mode = "a"
-
-        with open("bin/command_history.txt", mode, encoding="utf-8") as file:
-            file.writelines([f"{text}", "\n"])
-            file.close()
-        return True
-
     def get_audio_stream(self):  # Startet den Audio Stream
+        """
+        Startet den Audio Stream von Porcupine.
+        :return: type: Stream
+        """
         self.audio_stream = self.pa.open(
             rate=self.porcupine.sample_rate,
             channels=1,
@@ -120,22 +121,28 @@ class HomeAssistant:
         )
 
     def when_missing_audio_files(self):
-        print("Missing audio files")
         if self.audio_file_gen_process is None:
-
+            logger.info("Starting thread")
             missing_data = self.memory["missing_data"] = self.tts.missing_data
-            self.audio_file_gen_process = Process(target=self.tts.elevenlabs_generate_audio_files, args=(missing_data,))
+            self.audio_file_gen_process = Thread(target=self.tts.generate_audio_files, args=(missing_data,))
             self.audio_file_gen_process.start()
 
         elif self.audio_file_gen_process.is_alive() is False:
+            logger.info("THREAD IS DEAD")
             self.tts.should_listen_after_playing = self.tts.should_listen_after_generating
             self.tts.should_listen_after_generating = False
             self.tts.is_missing_files = False
-            missing_data, self.tts.is_missing_files = None, None
-            self.tts.missing_data, self.audio_file_gen_process = None, None
+            self.audio_file_gen_process = None
 
             missing_memory = self.memory["missing_data"]
-            self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1])
+            lds, exists = self.tts.get_command_path(missing_memory[0], missing_memory[2])
+            print(missing_memory)
+            if exists:
+                self.tts.elevenlabs_module(command=missing_memory[0], entities=missing_memory[1],
+                                           command_index=missing_memory[2])
+            else:
+                logger.warning("Error: File still missing.")
+
             self.memory.clear()
 
     def manual_ttc(self, sentence: str):
@@ -145,11 +152,8 @@ class HomeAssistant:
         :return: None
         """
         command, response, entities = self.ttc.manual_text_to_commands(sentence)
-        self.__write_to_txt__(f"{command}|{entities}|{response}")
+        utils.__write_to_txt__(f"{command}|{entities}|{response}")
 
-        if command == "error":
-            logger.error("Fehler mit dem ausführenden Befehlsclient.")
-            return command, None, None
         return command, entities, response
 
     @staticmethod
@@ -162,13 +166,14 @@ class HomeAssistant:
         :return: Die Antwort auf den Befehl, ggf. mit ergänzten Werten.
         """
         received_data = None
-        if len(entities) == 0:
+        if not entities or len(entities) == 0:
             received_data = SendCommand.send_to_server(command=command)
         elif len(entities) == 1:
             received_data = SendCommand.send_to_server(command=command, slot1=entities[0])
         elif len(entities) == 2:
             received_data = SendCommand.send_to_server(command=command, slot1=entities[0],
                                                        slot2=entities[1])
+
         return received_data if received_data is not None else response
 
     def text_to_speech(self, command: str, entities: list, response: str):
@@ -185,7 +190,6 @@ class HomeAssistant:
 
         self.get_audio_stream()  # Starte Audio Stream
         while self.is_running:
-            last_run = time.time()
             try:
                 # Lese Audio Stream
                 pcm = self.audio_stream.read(self.porcupine.frame_length)
@@ -195,7 +199,7 @@ class HomeAssistant:
                     self.when_missing_audio_files()
 
                 if self.cww.wakeWordFound or self.tts.should_listen:
-                    self.tts.play_sound("sound_effects\\portal_button_on.wav")
+                    self.tts.play_sound(settings["vrecog_activation_sound"])
                     self.stt.is_listening = True
                 if not self.stt.is_listening:
                     continue
@@ -211,28 +215,30 @@ class HomeAssistant:
                 sentence: str = self.stt.result_sentence
                 if sentence.encode("utf-8") == b'':
                     logger.info("Kein Text erkannt.")
-                    self.tts.play_sound("sound_effects\\portal_button_off.wav")
+                    self.tts.play_sound(settings["vrecog_deactivation_sound"])
                     continue
-
+                logger.info("Erkannter Text: " + sentence)
                 sentence = text2numde.sentence2num(sentence)
                 logger.info("Sprache zu Text umgewandelt; Text: " + sentence)
-                print(f"Time: {time.time() - last_run}")
 
                 # BEFEHLS-ERKENNUNG
                 if self.using_rasa:
                     response = self.ttc.get_rasa_response(sentence=sentence)
-                    print("RASA Response: " + response)
+                    logger.info("RASA Response: " + response)
                 else:
                     command, entities, response = self.manual_ttc(sentence)
-                print(f"Time: {time.time() - last_run}")
 
                 # BEFEHLS-AUSFÜHRUNG
-                self.send_command_to_client(command, entities, response)
-                print(f"Time: {time.time() - last_run}")
+                command_response = self.send_command_to_client(command, entities, response)
+                if command_response and command_response != "None":
+                    command = command_response
+                    logger.info("Command: " + command)
 
                 # SPRACH-AUSGABE
                 self.text_to_speech(command, entities, response)
-                print(f"Time: {time.time() - last_run}")
+
+                if command == "goodbye_yes":
+                    self.stop()
 
             except KeyboardInterrupt or SystemExit:
                 logger.info("Home Assistant stopping...")
@@ -243,9 +249,8 @@ class HomeAssistant:
         self.server.stop_server()
         self.audio_stream.close()
         self.pa.terminate()
-        print("Home Assistant stopped")
-
         self.porcupine.delete()
+        print("Home Assistant stopped")
 
         self.is_running = False
 
@@ -257,4 +262,3 @@ if __name__ == '__main__':
     home_assistant.start()
 
 # Info: Tonausgabe nicht über Bluetooth möglich
-# Todo: Sauberer Stopp des Programms
