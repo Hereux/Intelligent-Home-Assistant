@@ -154,9 +154,6 @@ class HomeAssistant:
         command, response, entities = self.ttc.manual_text_to_commands(sentence)
         utils.__write_to_txt__(f"{command}|{entities}|{response}")
 
-        if command == "error":
-            logger.error("Fehler mit dem ausführenden Befehlsclient.")
-            return command, None, None
         return command, entities, response
 
     @staticmethod
@@ -220,7 +217,7 @@ class HomeAssistant:
                     logger.info("Kein Text erkannt.")
                     self.tts.play_sound("sound_effects\\portal_button_off.wav")
                     continue
-
+                logger.info("Erkannter Text: " + sentence)
                 sentence = text2numde.sentence2num(sentence)
                 logger.info("Sprache zu Text umgewandelt; Text: " + sentence)
 
@@ -262,4 +259,3 @@ if __name__ == '__main__':
     home_assistant.start()
 
 # Info: Tonausgabe nicht über Bluetooth möglich
-# Todo: Sauberer Stopp des Programms

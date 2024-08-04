@@ -60,23 +60,15 @@ nlu:
   examples: |
     - bye
     - goodbye
-    - bis bald
-    - bis später
-    - bis dann
-    - gute Nacht
-    - schlafenszeit
     - Selbstzerstörung
     - ausschalten
     - deaktivieren
-    - beenden
     - abschalten
-    - Tschüss
     - Deaktivieren
 
 - intent: confirmation_yes
   examples: |
     - ja
-    - Ja
     - Ja bitte
     - Bestätigen
     - Bite doch
@@ -90,6 +82,7 @@ nlu:
     - Niemals
     - Stopp
     - Abbruch
+    - Nein
 
 - intent: volume_up
   examples: |
@@ -148,6 +141,7 @@ nlu:
 
 - intent: display_on_off
   examples: |
+    - schalte display [1](display_num_entity) [ein](display_on_off_entity)
     - Schalte den [1](display_num_entity) Monitor [an](display_on_off_entity)
     - Schalte [alle](display_num_entity) Monitore [aus](display_on_off_entity)
     - Schalte [alle](display_num_entity) Bildschirme [an](display_on_off_entity)
@@ -157,30 +151,23 @@ nlu:
 
 - intent: display_brightness
   examples: |
-    - mach den Monitor [1](display) [dunkler](display_brightness)
-    - Monitor [2](display) [heller](display_brightness)
     - mach den Bildschirm [3](display) auf [80](display_brightness) Prozent
-    - stelle den Bildschirm [alle](display) auf [35](display_brightness) Prozent Helligkeit
     - stelle den Bildschirm [1](display) auf [50](display_brightness) Prozent Helligkeit
     - stelle das Display [2](display) auf [50](display_brightness) Prozent
     - mach den Monitor [3](display) [heller](display_brightness)
     - stelle die Helligkeit von Display [1](display) auf [100](display_brightness) Prozent
     - stelle die Helligkeit des Monitors [2](display) auf [100](display_brightness) Prozent
-    - stelle die bildschirmhelligkeit von bildschirm [alle](display) auf [42](display_brightness) prozent
     - stelle die bildschirmhelligkeit von bildschirm [3](display) auf [100](display_brightness) prozent
 
 
 - intent: display_brightness_all
   examples: |
-    - mach den Bildschirm [heller](display_brightness)
-    - mach den Monitor [dunkler](display_brightness)
     - mach den Monitor auf [80](display_brightness) Prozent Helligkeit
     - Helligkeit auf [100](display_brightness) Prozent stellen
     - Mach die Monitore [dunkler](display_brightness)
     - Stelle die Helligkeit auf [1](display_brightness) Prozent
     - Stelle die Helligkeit auf [100](display_brightness) Prozent
     - Stelle die Bildschirmhelligkeit auf [100](display_brightness) Prozent
-    - Mach Displays auf [10](display_brightness)
 
 - intent: bot_challenge
   examples: |

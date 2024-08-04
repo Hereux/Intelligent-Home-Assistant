@@ -3,6 +3,7 @@ import logging
 import os
 import random
 import re
+import time
 from threading import Thread
 
 import elevenlabs
@@ -177,7 +178,7 @@ class TextToSpeech:
         audio_files = os.listdir(self.missing_audio_files_path)
         audio_file = random.choice(audio_files)
         audio_file_path = os.path.join(self.missing_audio_files_path, audio_file)
-        # self.play_multiple_files([], audio_file_path, blocking=False)
+        self.play_multiple_files([], audio_file_path, blocking=False)
         return None
 
     def generate_audio_files(self, missing_data):
@@ -269,6 +270,9 @@ class TextToSpeech:
                 sound = AudioSegment.from_mp3(audio_path)
 
                 play(sound[:len(sound) - end_cut])
+
+            # Gibt dem Nutzer einen Moment Zeit zum überlegen
+            time.sleep(2)
             self.is_speaking = False
             self.should_listen = self.should_listen_after_playing
             self.should_listen_after_playing = False

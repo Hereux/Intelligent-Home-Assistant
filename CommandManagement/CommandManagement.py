@@ -48,10 +48,16 @@ class CommandManagement(threading.Thread):
                 slot2 = splt[2]
 
         if command == "confirmation_yes":
+            if not self.last_command:
+                return "mistake"
+
             utter_message = self.last_command + "_yes"
             self.last_command = None
             return utter_message
         elif command == "confirmation_no":
+            if not self.last_command:
+                return "mistake"
+
             utter_message = self.last_command + "_no"
             self.last_command = None
             return utter_message
@@ -106,3 +112,11 @@ class CommandManagement(threading.Thread):
             else:
                 subprocess.Popen(found_addon["path"], shell=True).wait()
             return found_addon["utter_message"]
+
+    def confirmation_exceptions(self, command: str):
+        if self.last_command is None:
+            return "mistake"
+
+        if command == "confirmation_yes":
+
+            if self.last_command ==
