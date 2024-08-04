@@ -27,7 +27,7 @@ using_internet = not bool(settings["offline_mode"])
 vosk_log_level = int(settings["vosk_log_level"])
 SetLogLevel(vosk_log_level)
 logger = colorlog.getLogger("AIVoiceAssistant_HX")
-logger.setLevel(colorlog.DEBUG)
+logger.setLevel(colorlog.INFO)
 handler = colorlog.StreamHandler()
 handler.setFormatter(colorlog.ColoredFormatter(
     "%(log_color)s%(levelname)-8s%(reset)s %(white)s%(message)s %(reset)s",
@@ -199,7 +199,7 @@ class HomeAssistant:
                     self.when_missing_audio_files()
 
                 if self.cww.wakeWordFound or self.tts.should_listen:
-                    self.tts.play_sound("sound_effects\\portal_button_on.wav")
+                    self.tts.play_sound(settings["vrecog_activation_sound"])
                     self.stt.is_listening = True
                 if not self.stt.is_listening:
                     continue
@@ -215,7 +215,7 @@ class HomeAssistant:
                 sentence: str = self.stt.result_sentence
                 if sentence.encode("utf-8") == b'':
                     logger.info("Kein Text erkannt.")
-                    self.tts.play_sound("sound_effects\\portal_button_off.wav")
+                    self.tts.play_sound(settings["vrecog_deactivation_sound"])
                     continue
                 logger.info("Erkannter Text: " + sentence)
                 sentence = text2numde.sentence2num(sentence)
@@ -236,6 +236,9 @@ class HomeAssistant:
 
                 # SPRACH-AUSGABE
                 self.text_to_speech(command, entities, response)
+
+                if command == "goodbye_yes":
+                    self.stop()
 
             except KeyboardInterrupt or SystemExit:
                 logger.info("Home Assistant stopping...")

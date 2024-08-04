@@ -8,6 +8,8 @@ import colorlog
 logger = colorlog.getLogger("AIVoiceAssistant_HX")
 
 from CommandManagement import SoundControl, DisplayControl
+
+
 # TuyaSmart
 
 
@@ -35,8 +37,8 @@ class CommandManagement(threading.Thread):
         slot2 = None
         utter_message = None
         if not command:
-            print("Kein Befehl erhalten")
-            return "Kein Befehl erhalten."
+            logger.warning("Kein Befehl erhalten")
+            return "mistake"
         elif command.__contains__("action_"):
             command = command.split("action_")[1]
 
@@ -47,20 +49,7 @@ class CommandManagement(threading.Thread):
             if len(splt) >= 3:
                 slot2 = splt[2]
 
-        if command == "confirmation_yes":
-            if not self.last_command:
-                return "mistake"
-
-            utter_message = self.last_command + "_yes"
-            self.last_command = None
-            return utter_message
-        elif command == "confirmation_no":
-            if not self.last_command:
-                return "mistake"
-
-            utter_message = self.last_command + "_no"
-            self.last_command = None
-            return utter_message
+        command = self.confirmation_exceptions(command)
 
         if command == "stop":
             self.is_running = False
@@ -114,9 +103,28 @@ class CommandManagement(threading.Thread):
             return found_addon["utter_message"]
 
     def confirmation_exceptions(self, command: str):
-        if self.last_command is None:
+        """
+        Dieser Teil ist Hardcoded und wird für außergewöhnliche Fälle verwendet.
+        :param command:
+        :return:
+        """
+        print(f"Last Command: {self.last_command}")
+        utter_message = command
+
+        if self.last_command and command in ["confirmation_yes", "confirmation_no"] is None:
             return "mistake"
 
         if command == "confirmation_yes":
+            # Hardcode the exceptions
+            if self.last_command == "goodbye":
+                utter_message = self.last_command + "_yes"
 
-            if self.last_command ==
+        if command == "confirmation_no":
+            # Hardcode the exceptions
+            if self.last_command == "goodbye":
+                utter_message = self.last_command + "_no"
+
+        self.last_command = None
+        if utter_message in ["confirmation_yes", "confirmation_no"]:
+            return "mistake"
+        return utter_message

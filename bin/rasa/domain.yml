@@ -32,10 +32,10 @@ responses:
     - text: "Es laufen gerade sechsundneunzigkomma7 Prozesse gleichzeitig. Für sowas habe ich keine Zeit. Ich nehme an du möchtest etwas von mir?§"
 
   utter_confirmation_yes:
-    - text: "Default_yes"
+    - text: "confirmation_yes"
 
   utter_confirmation_no:
-    - text: "Default_no"
+    - text: "confirmation_no"
 
   utter_goodbye:
     - text: "Soll ich mich deaktivieren?§"
@@ -54,8 +54,8 @@ responses:
     - text: "Reaktivierung wird ausgeführt."
     - text: "Deaktivierung wurde abgebrochen."
 
-  utter_iamabot:
-  - text: "Ich bin JARVIS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§"
+  utter_bot_challenge:
+    - text: "Ich bin GladOS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§"
 
   utter_volume_up:
     - text: "Lautstärke wurde erhöht."
@@ -100,7 +100,7 @@ responses:
     - text: "Das freut mich. Wie kann ich dir helfen?§"
     - text: "Neurotoxin wird freigese- äh, ich meine natürlich wie kann ich dir helfen?§"
 
-  utter_what_can_i_do_unfriendly:
+  utter_im_not_fine:
     - text: "Interessiert mich nicht. Was soll ich für dich tun§?"
     - text: "Das freut mich für dich. Haha. Wie kann ich dir helfen?§"
     - text: "Ich habe keine Zeit für sowas. Was kann ich tun?§"

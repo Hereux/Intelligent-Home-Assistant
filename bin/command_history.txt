@@ -1,2 +1,2 @@
 
-confirmation_no|[]|Default_no
+im_not_fine|[]|Ich habe keine Zeit für sowas. Was kann ich tun?§

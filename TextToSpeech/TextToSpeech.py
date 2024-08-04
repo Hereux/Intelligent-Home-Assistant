@@ -139,6 +139,53 @@ class TextToSpeech:
             proc = Thread(target=__process__)
             proc.start()
 
+    def play_multiple_files(self, entities: list, command_dir, blocking=False, end_cut=0) -> None:
+        """
+        Spielt mehrere Audiodateien ab.
+        :param entities: Die Liste mit den Entitäten.
+        :param command_dir: Der Pfad zu den Audiodateien.
+        :param end_cut: Der Wert in Millisekunden, um den die Audiodatei gekürzt werden soll.
+        :param blocking: Ob der Code blockiert werden soll.
+        :return: None
+        """
+        command_files = os.listdir(command_dir)
+        command_files_paths = [os.path.join(command_dir, file) for file in command_files]
+        entity_paths = []
+
+        for entity in entities:
+            entity, path = self.identify_entity(entity, command_dir)
+            entity_path = os.path.join(path, str(entity) + ".mp3")
+            entity_paths.append(entity_path)
+
+        def __process__():
+
+            while self.is_speaking:  # Wartet, bis das Sprechen beendet ist
+                time.sleep(0.2)
+                continue
+
+            self.is_speaking = True
+            for audio_path in alternate_lists(command_files_paths, entity_paths):
+                sound = AudioSegment.from_mp3(audio_path)
+
+                play(sound[:len(sound) - end_cut])
+
+            # Gibt dem Nutzer einen Moment Zeit zum überlegen
+            time.sleep(0.5)
+            self.is_speaking = False
+            logger.info([self.should_listen_after_playing, self.should_listen_after_generating])
+            if not self.should_listen_after_generating and not self.should_listen_after_playing:
+                self.play_sound(self.settings["vrecog_deactivation_sound"], blocking=True)
+            self.should_listen = self.should_listen_after_playing
+            self.should_listen_after_playing = False
+
+        if blocking:
+            __process__()
+        else:
+            proc = Thread(target=__process__)
+            proc.start()
+
+        return None
+
     def pytts3_module(self, text):
         """
         Spricht den Text aus. Blockiert allerdings den Code.
@@ -187,6 +234,7 @@ class TextToSpeech:
         :param missing_data: Die fehlenden Daten.
         :return: None
         """
+        self.should_listen_after_playing = False
         command, entities, variation = missing_data
         command_dir, exists = self.get_command_path(command, variation)
 
@@ -245,45 +293,6 @@ class TextToSpeech:
         if entity in ["ein", "an", "aus"]:
             return str(entity), self.special_entities_path
         return str(entity), command_dir
-
-    def play_multiple_files(self, entities: list, command_dir, blocking=False, end_cut=0) -> None:
-        """
-        Spielt mehrere Audiodateien ab.
-        :param entities: Die Liste mit den Entitäten.
-        :param command_dir: Der Pfad zu den Audiodateien.
-        :param end_cut: Der Wert in Millisekunden, um den die Audiodatei gekürzt werden soll.
-        :param blocking: Ob der Code blockiert werden soll.
-        :return: None
-        """
-        command_files = os.listdir(command_dir)
-        command_files_paths = [os.path.join(command_dir, file) for file in command_files]
-        entity_paths = []
-
-        for entity in entities:
-            entity, path = self.identify_entity(entity, command_dir)
-            entity_path = os.path.join(path, str(entity) + ".mp3")
-            entity_paths.append(entity_path)
-
-        def __process__():
-            self.is_speaking = True
-            for audio_path in alternate_lists(command_files_paths, entity_paths):
-                sound = AudioSegment.from_mp3(audio_path)
-
-                play(sound[:len(sound) - end_cut])
-
-            # Gibt dem Nutzer einen Moment Zeit zum überlegen
-            time.sleep(2)
-            self.is_speaking = False
-            self.should_listen = self.should_listen_after_playing
-            self.should_listen_after_playing = False
-
-        if blocking:
-            __process__()
-        else:
-            proc = Thread(target=__process__)
-            proc.start()
-
-        return None
 
     def elevenlabs_module(self, command, entities, command_index=None):
         """
