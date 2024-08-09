@@ -199,6 +199,8 @@ class HomeAssistant:
                     self.when_missing_audio_files()
 
                 if self.cww.wakeWordFound or self.tts.should_listen:
+                    if self.tts.is_speaking:
+                        continue
                     self.tts.play_sound(settings["vrecog_activation_sound"])
                     self.stt.is_listening = True
                 if not self.stt.is_listening:

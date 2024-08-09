@@ -1,2 +1,8 @@
 
-im_not_fine|[]|Ich habe keine Zeit für sowas. Was kann ich tun?§
+greet|[]|Hallo, ich bin GladOS, eine von Hereux entwickelte künstliche Intelligenz. Wie geht es dir?§
+im_fine|[]|Ich bin nicht in der Lage Emotionen zu fühlen. Ich bin sehr beschäftigt, brauchst du etwas?§
+bot_challenge|[]|Ich bin GladOS, das für dieses Haus geschriebene Hausautomatisations-, Verwaltungs- und Assistenzsystem. Wie kann ich weiterhelfen?§
+display_on_off|[1, 'aus']|Ich habe den Monitor 1 ausgeschaltet.
+display_on_off|[1, 'an']|Ich habe den Monitor 1 angeschaltet.
+greet_asking|[]|Mir ist es nicht möglich etwas zu empfinden, deshalb kann ich nicht sagen, wie es mir geht. Was kann ich für dich tun?§
+error|[]|Ich habe dich nicht verstanden.

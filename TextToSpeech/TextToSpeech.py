@@ -124,10 +124,8 @@ class TextToSpeech:
         path = os.path.join(os.getcwd(), "bin", path)
 
         def __process__():
-            self.is_speaking = True
             sound = AudioSegment.from_mp3(path)
             play(sound[:len(sound) - end_cut])
-            self.is_speaking = False
 
             if self.should_listen_after_playing:
                 self.should_listen = True
